@@ -1,0 +1,213 @@
+Before:
+added tilemap system.
+added player movements.
+
+20/11/2020:
+added player animations.
+added player idle breath system.
+removed player diagonal movements.
+
+21/11/2020:
+added player position + direction saving.
+added writeVision.
+
+22/11/2020:
+updated writeVision.
+
+23/11/2020:
+added map player protection.
+added map protection layer.
+added stairs sprites.
+added sign text dialog.
+
+24/11/2020:
+improved sign dialog system.
+
+28/11/2020:
+added multiple line dialog support.
+added sign text list.
+
+29/11/2020:
+improved multiple line dialog.
+improved loading map by adding texture coordinate list.
+
+01/12/2020:
+improved level0.
+fixed sign placement in write vision.
+
+02/12/2020:
+added multiple maps support.
+added level end trigger.
+added game icon.
+
+03/12/2020:
+improved game icon : change dynamically
+
+27/01/2021:
+added test sound system
+
+31/01/2021:
+added npc class from player
+added npc multiple sprite handle
+
+01/02/2021:
+added npc list system
+added npc path system
+corrected npc path gap
+added differents npc sprites
+added player collision to npcs
+
+10/03/2021:
+fixed npc movement by position rectification
+
+11/03/2021:
+added player detection based on radius
+fixed npc walking forward/backward animation
+added player enemy npc pathfinding
+
+22/03/2021:
+added shooting system based on mouse click
+added shooting speed based on click distance
+added shooting for bots
+added damage taking
+added player regen based on time
+
+02/04/2021:
+changed texture for arrow
+fixed lot of bugs
+
+04/04/2021:
+added inventory hotbar and selector
+
+05/04/2021:
+added hotbar show item and number system
+added consumming arrow item when shooting
+added axe attack and wood harvesting
+
+06/04/2021:
+fixed lifebar blinking
+added item drop and item stack drop
+
+07/04/2021:
+added item gathering
+
+08/04/2021:
+added sound system
+added multiples audio
+added enemy blink when hit
+
+09/04/2021:
+added mob/npc item drop on death
+
+10/04/2021:
+added new items and workbench tile
+added rock mining
+improved/optimized code
+fixed items number display
+
+11/04/2021:
+added inventory ui
+added workbench(block) placing system and async save
+
+12/04/2021:
+added auto save system
+added async save icon indicator
+added item wall collision
+fixed duplication bug
+added item despawn in time
+added item drop when hotbar is full
+added custom crosshair cursor
+added craft ui
+
+13/04/2021:
+show craft list
+added craft system
+improved player action() fonction
+improved block placing action
+improved block breaking action
+
+14/04/2021:
+code improved
+added inventory saving
+added health saving
+
+15/04/2021:
+implemented procedural map
+
+16/04/2021:
+improved procedural map generation
+added biomes
+
+17/04/2021:
+fixed and changed procedural map generation
+remade block placing/breaking for procedural map
+fixed sprite layers on procedural map
+
+18/04/2021:
+added main menu
+added input boxes
+added world creating
+added world loading
+
+19/04/2021:
+added floatingItem save
+fixed block placing two times
+added water grass fade tiles
+
+29/04/2021:
+remade npc pathfinding for procedural map
+
+30/04/2021:
+fixed new pathfinding obstacle map system
+
+01/05/2021:
+added iron, diamond, added tools crafts
+added iron and diamond ores generation
+added furnace, chest items and ui
+
+02/05/2021:
+added item inventory system
+added basic drag and drop item system
+
+03/05/2021:
+added chest system (!!!!duplication bug)
+
+04/05/2021:
+fixed item cells linking bug (duplication with chests)
+added iron and diamond blocks
+
+05/05/2021:
+added command menu
+added give item command
+
+06/05/2021:
+added commands : regen, maxhealth, speed, tp, save
+
+10/05/2021:
+added furnace melting system
+
+12/05/2021:
+added night and day cycle
+
+13/05/2021:
+added torch and light system
+
+14/05/2021:
+added spawnPoint system and sleeping bag
+added time
+added sleeping system
+improved debug menu
+
+15/05/2021:
+added egg spawn system
+added random mob spawn
+added mob wandering
+
+16/05/2021:
+added mob spawning outside screen
+added torches avoid hostile mob spawn
+
+17/05/2021:
+fps optimization torch light blend
+added respawn title and dead
+added more commands

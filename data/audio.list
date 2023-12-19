@@ -1,0 +1,16 @@
+menu_click:audio/menuClick.ogg
+menu_hover:audio/menuHover.ogg
+drop_item:audio/itemDrop.ogg
+arrow_shot:audio/arrowShot.ogg
+axe_harvest:audio/axeHarvest.ogg
+pickaxe_harvest:audio/pickaxeHarvest.ogg
+block:audio/block.ogg
+heal_bonus:audio/healBonus.ogg
+max_health_bonus:audio/maxHealthBonus.ogg
+blade_hit:audio/bladeHit.ogg
+workbench_place:audio/block_place/workbenchPlace.ogg
+wood_place:audio/block_place/woodPlace.ogg
+stone_place:audio/block_place/stonePlace.ogg
+wool_place:audio/block_place/woolPlace.ogg
+punch:audio/punch.ogg
+craft:audio/craft.ogg
