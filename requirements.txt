@@ -1,0 +1,3 @@
+pip install pygame
+pip install pathfinding
+pip install perlin-noise
