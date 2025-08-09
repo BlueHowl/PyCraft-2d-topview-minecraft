@@ -1505,39 +1505,39 @@ class Mob(pg.sprite.Sprite):
             nx = int((self.pos.x // TILESIZE) - (self.currentPathfind[0].x))
             ny = int((self.pos.y // TILESIZE) - (self.currentPathfind[0].y))
             if self.pathdirection == '':
-                if int(self.path[self.i][0]) > nx:
+                if int(self.path[self.i].x) > nx:
                     self.pathdirection = 'r'
-                elif int(self.path[self.i][0]) < nx:
+                elif int(self.path[self.i].x) < nx:
                     self.pathdirection = 'l'
-                elif int(self.path[self.i][1]) < ny:
+                elif int(self.path[self.i].y) < ny:
                     self.pathdirection = 'u'
-                elif int(self.path[self.i][1]) > ny:
+                elif int(self.path[self.i].y) > ny:
                     self.pathdirection = 'b'
 
             isDone = False
             if self.pathdirection == 'r':
-                if nx * TILESIZE < int(self.path[self.i][0])*TILESIZE:
+                if nx * TILESIZE < int(self.path[self.i].x)*TILESIZE:
                     self.vel.x = MOB_WALK_SPEED
                 else:
-                    self.pos.x = int(self.currentPathfind[0].x + self.path[self.i][0])*TILESIZE
+                    self.pos.x = int(self.currentPathfind[0].x + self.path[self.i].x)*TILESIZE
                     isDone = True
             elif self.pathdirection == 'l':
-                if nx * TILESIZE > int(self.path[self.i][0])*TILESIZE:
+                if nx * TILESIZE > int(self.path[self.i].x)*TILESIZE:
                     self.vel.x = -MOB_WALK_SPEED
                 else:
-                    self.pos.x = int(self.currentPathfind[0].x + self.path[self.i][0])*TILESIZE
+                    self.pos.x = int(self.currentPathfind[0].x + self.path[self.i].x)*TILESIZE
                     isDone = True
             elif self.pathdirection == 'u':
-                if ny * TILESIZE > int(self.path[self.i][1])*TILESIZE:
+                if ny * TILESIZE > int(self.path[self.i].y)*TILESIZE:
                     self.vel.y = -MOB_WALK_SPEED
                 else:
-                    self.pos.y = int(self.currentPathfind[0].y + self.path[self.i][1])*TILESIZE
+                    self.pos.y = int(self.currentPathfind[0].y + self.path[self.i].y)*TILESIZE
                     isDone = True
             elif self.pathdirection == 'b':
-                if ny * TILESIZE < int(self.path[self.i][1])*TILESIZE:
+                if ny * TILESIZE < int(self.path[self.i].y)*TILESIZE:
                     self.vel.y = MOB_WALK_SPEED
                 else:
-                    self.pos.y = int(self.currentPathfind[0].y + self.path[self.i][1])*TILESIZE
+                    self.pos.y = int(self.currentPathfind[0].y + self.path[self.i].y)*TILESIZE
                     isDone = True
 
             if isDone or self.hasCollided:
