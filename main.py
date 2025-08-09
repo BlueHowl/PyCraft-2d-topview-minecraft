@@ -940,7 +940,7 @@ class Game:  # classe principale Game
                     if self.input_commands_txt.active:
                         command = self.input_commands_txt.text.lower().split(' ')
                         if len(command) > 0:
-                            if command[0] == ':give':
+                            if command[0] == '/give':
                                 if len(command) > 2:
                                     if command[2].isdigit():
                                         if command[1].isdigit():
@@ -953,7 +953,7 @@ class Game:  # classe principale Game
                                                     self.giveItem(
                                                         itemId, int(command[2]))
                                                     break
-                            elif command[0] == ':tp':
+                            elif command[0] == '/tp':
                                 if len(command) > 2:
                                     if command[1].isdigit() and command[2].isdigit():
                                         self.player.pos = vec(
@@ -965,17 +965,17 @@ class Game:  # classe principale Game
                                         self.isGamePaused = False
                                         self.input_commands_txt.active = False
                                         self.input_commands_txt.color = BLACK
-                            elif command[0] == ':speed':
+                            elif command[0] == '/speed':
                                 if len(command) > 1:
                                     if command[1].isdigit():
                                         self.player.speed = int(
                                             command[1]) * TILESIZE
-                            elif command[0] == ':regen':
+                            elif command[0] == '/regen':
                                 self.player.health = self.player.lifebar.maxHealth
                                 self.player.lifebar.updateHealth(
                                     self.player.health)
                                 self.player.lifebar.updateSurface()
-                            elif command[0] == ':maxhealth':
+                            elif command[0] == '/maxhealth':
                                 if len(command) > 1:
                                     self.player.lifebar.maxHealth = int(
                                         command[1])
@@ -983,9 +983,9 @@ class Game:  # classe principale Game
                                     self.player.lifebar.updateHealth(
                                         self.player.health)
                                     self.player.lifebar.updateSurface()
-                            elif command[0] == ':save':
+                            elif command[0] == '/save':
                                 self.save()
-                            elif command[0] == ':hitbox':
+                            elif command[0] == '/hitbox':
                                 if len(command) > 1:
                                     if command[1].isdigit():
                                         if int(command[1]) == 0:
@@ -994,12 +994,12 @@ class Game:  # classe principale Game
                                             self.hitboxDebug = True
                                 else:
                                     self.hitboxDebug = True
-                            elif command[0] == ':spawnpoint':
+                            elif command[0] == '/spawnpoint':
                                 if len(command) > 2:
                                     if command[1].isdigit() and command[2].isdigit():
                                         self.spawnPoint = vec(
                                             int(command[1]), int(command[2]))
-                            elif command[0] == ':time':
+                            elif command[0] == '/time':
                                 if len(command) > 2:
                                     if command[1] == 'add':
                                         if command[2].isdigit():
@@ -1021,7 +1021,7 @@ class Game:  # classe principale Game
                                     self.isGamePaused = False
                                     self.input_commands_txt.active = False
                                     self.input_commands_txt.color = BLACK
-                            elif command[0] == ':spawn':
+                            elif command[0] == '/spawn':
                                 if len(command) > 3:
                                     if command[1].isdigit() and command[2].isdigit() and command[3].isdigit():
                                         mobId = max(
@@ -1037,7 +1037,7 @@ class Game:  # classe principale Game
                                         if mobId != -1:
                                             Mob(self, int(command[2]), int(
                                                 command[3]), mobId)
-                            elif command[0] == ':clear':
+                            elif command[0] == '/clear':
                                 if len(command) > 1:
                                     if command[1] == 'inventory':
                                         for i in range(len(self.player.hotbar.itemList)):
@@ -1058,7 +1058,7 @@ class Game:  # classe principale Game
 
                                         for floatItem in self.floatingItems:
                                             floatItem.kill()
-                            elif command[0] == ':kill':
+                            elif command[0] == '/kill':
                                 self.player.die()
 
                         self.input_commands_txt.text = ''
