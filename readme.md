@@ -13,8 +13,15 @@ This pygame game written in Python was one of my Retho TFE (secondary school fin
 ![Gameplay by nigh Screenshot](screenshots/screenshot-2.png)
 
 
-## Making the game an executable
+## Making the game an executable for
 
-- pip install pyinstaller
+### Windows :
+- ```pyinstaller -y --onefile --windowed main.py --add-data "textures;textures" --add-data "audio;audio" --add-data "data;data" --add-data "saves;saves" --add-data "Pixellari.ttf;." --icon=icon.ico``` \
+(Remove --onefile if you want to customize the fame)
 
-- pyinstaller --onefile --windowed main.py --add-data "textures;textures" --add-data "audio;audio" --add-data "data;data" --add-data "saves;saves" --add-data "Pixellari.ttf;." --icon=icon.ico
+### Linux : 
+- ```docker build -t pygame-builder .``` 
+- --onefile :
+    - ```docker run --rm -v ${PWD}:/output pygame-builder cp /app/dist/main /output/```\
+- multiple file :
+    - ```docker run --rm -v ${PWD}:/output pygame-builder bash -c "cp -r /app/dist/main /output/"```
