@@ -217,4 +217,4 @@ added more commands
 11/08/2025:
 fixed mob pathfinding library changes
 changed command prefix to "/" instead of ":"
-refactored project structure
+refactored project structure and separated I/O logic
