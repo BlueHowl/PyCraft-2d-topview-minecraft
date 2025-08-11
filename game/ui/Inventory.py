@@ -393,7 +393,7 @@ class Inventory(pg.sprite.Sprite):
                 else:
                     self.currentCraft = _current
             if i != 0:
-                pg.mixer.Sound.play(self.game.audioList.get('menu_hover')) #joue le son préchargée
+                self.game.play_sound('menu_hover')  # Use safe audio system
         self.last_craftUi = i
 
         self.displayItem(self.currentDraggedItem, pos[0] - 48, pos[1] - 48)
@@ -416,7 +416,7 @@ class Inventory(pg.sprite.Sprite):
                 hasClickedBtn = True
 
         if hasClickedBtn:
-            pg.mixer.Sound.play(self.game.audioList.get('menu_click')) #joue le son préchargée
+            self.game.play_sound('menu_click')  # Use safe audio system
 
         if self.currentCraft: #si la liste n'est pas vide
             for recipe in self.currentCraft[0].split(':'):
@@ -436,7 +436,7 @@ class Inventory(pg.sprite.Sprite):
             newItem = self.currentCraft[1].split(',')
             self.game.player.hotbar.addItem(int(newItem[0]), int(newItem[1]))
 
-            pg.mixer.Sound.play(self.game.audioList.get('craft')) #joue le son préchargée
+            self.game.play_sound('craft') #joue le son préchargée
 
             self.toggleGui(True, self.craftPage)
 

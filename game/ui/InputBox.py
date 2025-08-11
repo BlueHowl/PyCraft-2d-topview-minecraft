@@ -20,7 +20,7 @@ class InputBox:
             if self.rect.collidepoint(event.pos):
                 # Toggle the active variable.
                 self.active = not self.active
-                pg.mixer.Sound.play(self.game.audioList.get('menu_hover')) #joue le son préchargée
+                self.game.play_sound('menu_hover')  # Use safe audio system
             else:
                 self.active = False
             # Change the current color of the input box.
@@ -32,11 +32,11 @@ class InputBox:
                     pass
                 elif event.key == pg.K_BACKSPACE:
                     self.text = self.text[:-1]
-                    pg.mixer.Sound.play(self.game.audioList.get('menu_click')) #joue le son préchargée
+                    self.game.play_sound('menu_click')  # Use safe audio system
                 else:
                     if len(self.text) < self.limit:
                         self.text += event.unicode
-                        pg.mixer.Sound.play(self.game.audioList.get('menu_click')) #joue le son préchargée
+                        self.game.play_sound('menu_click')  # Use safe audio system
                 # Re-render the text.
                 self.txt_surface = self.game.font_32.render(self.text, True, self.color)
 

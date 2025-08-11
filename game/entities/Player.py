@@ -120,7 +120,7 @@ class Player(pg.sprite.Sprite): #classe du joueur
                 hasCollided = True
 
         if self.game.now > self.last_blocked + 500 and hasCollided:
-            pg.mixer.Sound.play(self.game.audioList.get('block')) #joue le son préchargée
+            self.game.play_sound('block')  # Use safe audio system
             self.last_blocked = self.game.now
 
     def update(self):
@@ -162,7 +162,7 @@ class Player(pg.sprite.Sprite): #classe du joueur
                                 item[1] += floatItem.item[1]
                                 floatItem.kill()
                                 self.hotbar.updateSelector(self.hotbar.index)
-                                pg.mixer.Sound.play(self.game.audioList.get('drop_item')) #joue le son préchargée
+                                self.game.play_sound('drop_item')  # Use safe audio system
 
                                 self.game.hasPlayerStateChanged = True #autorise la sauvegarde du joueur
                                 break
@@ -170,7 +170,7 @@ class Player(pg.sprite.Sprite): #classe du joueur
                                 item[1] = 1
                                 floatItem.kill()
                                 self.hotbar.updateSelector(self.hotbar.index)
-                                pg.mixer.Sound.play(self.game.audioList.get('drop_item')) #joue le son préchargée
+                                self.game.play_sound('drop_item')  # Use safe audio system
 
                                 self.game.hasPlayerStateChanged = True #autorise la sauvegarde du joueur
                                 break
@@ -246,7 +246,7 @@ class Player(pg.sprite.Sprite): #classe du joueur
                     #now = self.game.now
                     #if now - self.last_attack > FIRE_RATE:
                         #self.last_attack = now
-                    pg.mixer.Sound.play(self.game.audioList.get('arrow_shot')) #joue le son préchargée
+                    self.game.play_sound('arrow_shot')  # Use safe audio system
 
                     dx = target.x - self.pos.x + 10
                     dy = target.y - self.pos.y + 5
@@ -293,19 +293,19 @@ class Player(pg.sprite.Sprite): #classe du joueur
 
                                     self.game.changeTile(target, itemAssign[1], False)
 
-                                    pg.mixer.Sound.play(self.game.audioList.get(itemAssign[2])) #joue le son préchargée
+                                    self.game.play_sound(itemAssign[2])  # Use safe audio system
 
                     elif itemAssign[0] == '1' or itemAssign[0] == '2' or itemAssign[0] == '3':
                         if distance <= MELEEREACH:
                             for mob in self.game.mobs:
                                 if mob.rect.collidepoint(target.x, target.y):
                                     mob.takeDamage(int(itemAssign[1]))
-                                    pg.mixer.Sound.play(self.game.audioList.get('blade_hit')) #joue le son préchargée
+                                    self.game.play_sound('blade_hit')  # Use safe audio system
                                     break
 
                             if itemAssign[0] == '1':
                                 if tile == '1p' or tile == '116':
-                                    pg.mixer.Sound.play(self.game.audioList.get(itemAssign[4])) #joue le son préchargée
+                                    self.game.play_sound(itemAssign[4])  # Use safe audio system
                                     if self.harvest_clicks % int(itemAssign[2]) == 0:
                                         if randint(0, 16) == 0:
                                             self.hotbar.addItem(26, 1)
@@ -316,11 +316,11 @@ class Player(pg.sprite.Sprite): #classe du joueur
                                 elif tile != '.': #si case n'est pas vide
                                     if cell_infos[4] == 2 or (cell_infos[4] == 3 and (currentItem[0] == 14 or currentItem[0] == 15)):
                                         self.breakBlock(tile, int(itemAssign[3]), cell_infos[6], target)
-                                        pg.mixer.Sound.play(self.game.audioList.get(itemAssign[4])) #joue le son préchargée
+                                        self.game.play_sound(itemAssign[4])  # Use safe audio system
 
                             elif itemAssign[0] == '2':
                                 if tile == '1d' or tile == '1e' or tile == '1f' or tile == '111' or tile == '114':
-                                    pg.mixer.Sound.play(self.game.audioList.get(itemAssign[4])) #joue le son préchargée
+                                    self.game.play_sound(itemAssign[4])  # Use safe audio system
                                     if self.harvest_clicks % int(itemAssign[2]) == 0:
                                         self.hotbar.addItem(4, 1)
                                         self.breakBlock(tile, 1, cell_infos[6], target)
@@ -328,7 +328,7 @@ class Player(pg.sprite.Sprite): #classe du joueur
                                 elif tile != '.': #si case n'est pas vide
                                     if cell_infos[4] == 1:
                                         self.breakBlock(tile, int(itemAssign[3]), cell_infos[6], target)
-                                        pg.mixer.Sound.play(self.game.audioList.get(itemAssign[4])) #joue le son préchargée
+                                        self.game.play_sound(itemAssign[4])  # Use safe audio system
 
                     elif itemAssign[0] == '4':
                         if tile[0] == '0' and tile != '00':
@@ -340,18 +340,18 @@ class Player(pg.sprite.Sprite): #classe du joueur
                         for mob in self.game.mobs:
                             if mob.rect.collidepoint(target.x, target.y):
                                 mob.takeDamage(1)
-                                pg.mixer.Sound.play(self.game.audioList.get('punch')) #joue le son préchargée
+                                self.game.play_sound('punch')  # Use safe audio system
                                 break
 
                         if tile == '1d' or tile == '1e' or tile == '1f' or tile == '111' or tile == '114':
-                            pg.mixer.Sound.play(self.game.audioList.get('axe_harvest')) #joue le son préchargée
+                            self.game.play_sound('axe_harvest')  # Use safe audio system
                             if self.harvest_clicks % 10 == 0:
                                 self.hotbar.addItem(4, 1)
                             self.harvest_clicks += 1
                         elif tile != '.': #si case n'est pas vide
                             if cell_infos[4] == 1:
                                 self.breakBlock(tile, 2, cell_infos[6], target)
-                                pg.mixer.Sound.play(self.game.audioList.get('axe_harvest')) #joue le son préchargée
+                                self.game.play_sound('axe_harvest')  # Use safe audio system
 
     def breakBlock(self, tile, damage, item, target):
         if tile[0] == '1':

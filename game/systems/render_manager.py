@@ -3,6 +3,7 @@ Render Manager - Handles all rendering and drawing operations.
 """
 import pygame as pg
 from game.config.settings import *
+from game.config.game_config import GameConfig
 
 
 class RenderManager:
@@ -51,7 +52,7 @@ class RenderManager:
         self._draw_gui()
         
         # Draw debug info
-        if self.game.input_commands:
+        if GameConfig.DEBUG_MODE or self.game.input_commands:
             self._draw_debug_info()
             
         # Draw saving indicator
@@ -83,28 +84,28 @@ class RenderManager:
         """Draw floating items."""
         for sprite in self.game.floatingItems:
             self.game.screen.blit(sprite.image, self.game.camera.apply(sprite))
-            if self.game.hitboxDebug:
+            if GameConfig.SHOW_HITBOXES or self.game.hitboxDebug:
                 pg.draw.rect(self.game.screen, WHITE, self.game.camera.apply(sprite), 1)
     
     def _draw_players(self):
         """Draw player sprites."""
         for sprite in self.game.players:
             self.game.screen.blit(sprite.image, self.game.camera.apply(sprite))
-            if self.game.hitboxDebug:
+            if GameConfig.SHOW_HITBOXES or self.game.hitboxDebug:
                 pg.draw.rect(self.game.screen, WHITE, self.game.camera.apply(sprite), 1)
     
     def _draw_mobs(self):
         """Draw mob sprites."""
         for sprite in self.game.mobs:
             self.game.screen.blit(sprite.image, self.game.camera.apply(sprite))
-            if self.game.hitboxDebug:
+            if GameConfig.SHOW_HITBOXES or self.game.hitboxDebug:
                 pg.draw.rect(self.game.screen, WHITE, self.game.camera.apply(sprite), 1)
     
     def _draw_projectiles(self):
         """Draw projectile sprites."""
         for sprite in self.game.projectiles:
             self.game.screen.blit(sprite.image, self.game.camera.apply(sprite))
-            if self.game.hitboxDebug:
+            if GameConfig.SHOW_HITBOXES or self.game.hitboxDebug:
                 pg.draw.rect(self.game.screen, WHITE, self.game.camera.apply(sprite), 1)
     
     def _draw_crosshair(self):

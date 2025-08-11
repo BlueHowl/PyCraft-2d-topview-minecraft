@@ -64,7 +64,7 @@ class GameStateManager:
             if rest != 0:
                 self.game.player.hotbar.addItem(itemId, rest)
 
-        pg.mixer.Sound.play(self.game.audioList.get('drop_item'))
+        self.game.play_sound('drop_item')
 
     def save_game(self):
         """Save the game state using the new data manager."""

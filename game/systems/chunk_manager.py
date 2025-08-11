@@ -1,6 +1,8 @@
 from perlin_noise import PerlinNoise
 from random import *
 from game.config.settings import *
+from game.config.game_config import GameConfig
+from game.utils.logger import log_debug, log_warning, log_info
 
 #chunk_manager code from https://www.reddit.com/r/pygame/comments/h8cfl3/infinite_world_generation_algorithm/
 #modified
@@ -20,6 +22,11 @@ class Chunk():
         self.chunkname = str()
         self.unsaved = int()
         
+        # Memory management
+        self.chunk_access_times = {}  # Track when chunks were last accessed
+        self.modified_chunks = set()  # Track chunks modified by player
+        self.max_cached_chunks = GameConfig.MAX_CHUNK_CACHE_SIZE
+        
         # Load chunks from new format if data_manager is available
         if data_manager:
             world_name = directory.split('/')[-1] if '/' in directory else directory.split('\\')[-1]
@@ -27,6 +34,7 @@ class Chunk():
             game_data = data_manager.load_game(world_name)
             if game_data and game_data.get('entities', {}).get('chunks'):
                 self.chunks = game_data['entities']['chunks']
+                log_info(f"Loaded {len(self.chunks)} chunks from save file")
                 return
 
     def get_chunks(self):
@@ -35,9 +43,86 @@ class Chunk():
     def get_loaded(self):
         return self.loaded
 
-    # remove given chunk from the loaded list, so it does not affect the performance
+    # Remove given chunk from the loaded list, so it does not affect the performance
     def unload(self, chunk):
-        self.loaded.remove(chunk)
+        if chunk in self.loaded:
+            self.loaded.remove(chunk)
+            log_debug(f"Unloaded chunk: {chunk}")
+
+    def cleanup_distant_chunks(self, player_chunk_x: int, player_chunk_y: int):
+        """Remove chunks that are too far from the player to free memory."""
+        chunks_to_unload = []
+        max_distance = GameConfig.CHUNK_UNLOAD_DISTANCE
+        
+        for chunk_name in self.chunks:
+            if ',' in chunk_name:
+                try:
+                    chunk_x, chunk_y = map(int, chunk_name.split(','))
+                    distance = max(abs(chunk_x - player_chunk_x), abs(chunk_y - player_chunk_y))
+                    
+                    if distance > max_distance:
+                        chunks_to_unload.append(chunk_name)
+                except ValueError:
+                    log_warning(f"Invalid chunk name format: {chunk_name}")
+        
+        # Only unload from loaded list, but keep chunk data for player modifications
+        unloaded_count = 0
+        for chunk_name in chunks_to_unload:
+            if chunk_name in self.loaded:
+                self.loaded.remove(chunk_name)
+                unloaded_count += 1
+            # Update access time but don't delete chunk data to preserve player modifications
+            if chunk_name in self.chunk_access_times:
+                import time
+                self.chunk_access_times[chunk_name] = time.time()
+        
+        if unloaded_count > 0:
+            log_debug(f"Unloaded {unloaded_count} distant chunks from render list (data preserved)")
+    
+    def manage_chunk_memory(self):
+        """Manage chunk memory by removing old unused chunks if we exceed the limit."""
+        # In debug mode, be much more conservative about memory cleanup
+        effective_max = self.max_cached_chunks * 2 if GameConfig.DEBUG_MODE else self.max_cached_chunks
+        
+        if len(self.chunks) <= effective_max:
+            return
+        
+        import time
+        current_time = time.time()
+        
+        # Get chunks sorted by last access time (oldest first)
+        # Only consider chunks that haven't been accessed in the last 5 minutes
+        old_threshold = current_time - 300  # 5 minutes
+        candidate_chunks = []
+        
+        for name, access_time in self.chunk_access_times.items():
+            # Never delete chunks that have been modified by the player
+            if (access_time < old_threshold and 
+                name not in self.loaded and 
+                name not in self.modified_chunks):
+                candidate_chunks.append((name, access_time))
+        
+        candidate_chunks.sort(key=lambda x: x[1])
+        
+        # Only remove chunks if we have many old candidates
+        chunks_to_remove = min(len(candidate_chunks), max(0, len(self.chunks) - effective_max))
+        removed_count = 0
+        
+        for i in range(chunks_to_remove):
+            chunk_name = candidate_chunks[i][0]
+            if chunk_name in self.chunks and chunk_name not in self.loaded:
+                del self.chunks[chunk_name]
+                removed_count += 1
+            if chunk_name in self.chunk_access_times:
+                del self.chunk_access_times[chunk_name]
+        
+        if removed_count > 0:
+            log_debug(f"Removed {removed_count} old unused chunks due to memory limit")
+    
+    def access_chunk(self, chunk_name: str):
+        """Mark a chunk as accessed for memory management."""
+        import time
+        self.chunk_access_times[chunk_name] = time.time()
 
 
     # Generate a chunk at given coordinates using pnoise2 and adding it to the chunk list

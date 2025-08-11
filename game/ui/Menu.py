@@ -157,7 +157,7 @@ class Menu(pg.sprite.Sprite):
                 if self.last_Ui != i:
                     self.toggleGui(self.Page)
                     if i != 0:
-                        pg.mixer.Sound.play(self.game.audioList.get('menu_hover')) #joue le son préchargée
+                        self.game.play_sound('menu_hover')  # Use safe audio system
             self.last_Ui = i
 
     def click(self, pos):
@@ -189,7 +189,7 @@ class Menu(pg.sprite.Sprite):
                     else:
                         print(f"Failed to create world: {self.world_name}")
 
-            pg.mixer.Sound.play(self.game.audioList.get('menu_click')) #joue le son préchargée
+            self.game.play_sound('menu_click')  # Use safe audio system
 
     def calculateClick(self, pos, box):
         if pos[0] > box[0] and pos[0] < box[0] + box[2] and pos[1] > box[1] and pos[1] < box[1] + box[3]:

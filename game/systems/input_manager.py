@@ -121,7 +121,7 @@ class InputManager:
                 currentItem[0] = 0
                 currentItem[1] = 0
                 self.game.player.hotbar.updateSelector(self.game.player.hotbar.index)
-                pg.mixer.Sound.play(self.game.audioList.get('drop_item'))
+                self.game.play_sound('drop_item')
                 self.game.hasPlayerStateChanged = True
             else:
                 # Drop single item
@@ -134,7 +134,7 @@ class InputManager:
                             if floatItem.item[1] < STACK:
                                 floatItem.item[1] += 1
                                 self.game.player.hotbar.substractItem(currentItem)
-                                pg.mixer.Sound.play(self.game.audioList.get('drop_item'))
+                                self.game.play_sound('drop_item')
                                 hasStacked = True
                                 self.game.hasPlayerStateChanged = True
                                 break
@@ -142,7 +142,7 @@ class InputManager:
                 if not hasStacked:
                     FloatingItem(self.game, dropOffset.x, dropOffset.y, [currentItem[0], 1])
                     self.game.player.hotbar.substractItem(currentItem)
-                    pg.mixer.Sound.play(self.game.audioList.get('drop_item'))
+                    self.game.play_sound('drop_item')
     
     def _handle_interact(self):
         """Handle interaction (E key)."""
@@ -161,7 +161,7 @@ class InputManager:
             self.game.player.lifebar.maxHealth += 2
             self.game.player.lifebar.updateHealth(self.game.player.health)
             self.game.player.lifebar.updateSurface()
-            pg.mixer.Sound.play(self.game.audioList.get('max_health_bonus'))
+            self.game.play_sound('max_health_bonus')
         else:
             # Handle tile interactions
             self._handle_tile_interactions(x, y)
@@ -172,7 +172,7 @@ class InputManager:
         self.game.player.health = new_health
         self.game.player.lifebar.updateHealth(self.game.player.health)
         self.game.player.lifebar.updateSurface()
-        pg.mixer.Sound.play(self.game.audioList.get(sound))
+        self.game.play_sound(sound)
     
     def _handle_tile_interactions(self, x, y):
         """Handle interactions with tiles around the player."""
@@ -209,7 +209,7 @@ class InputManager:
         for l in self.game.map.levelSignData:
             if int(l[0]) == x and int(l[1]) == y:
                 txt = l[2].split('-|-')
-                pg.mixer.Sound.play(self.game.audioList.get('menu_click'))
+                self.game.play_sound('menu_click')
                 
                 if not self.game.player.isDialog:
                     self.game.currentDialog = TextObject(

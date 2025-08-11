@@ -4,7 +4,10 @@ Resource Manager - Handles loading and managing game assets.
 import pygame as pg
 import json
 from os import path
+from typing import Dict, Any, Optional
 from game.config.settings import PLAYER_SPRITE, TILESIZE
+from game.config.game_config import GameConfig
+from game.utils.logger import log_info, log_error, log_warning, log_debug
 from game.data import DataManager
 
 
@@ -18,25 +21,75 @@ class ResourceManager:
         self.audio = {}
         self.data = {}
         
+        # Resource loading stats
+        self._loading_errors = []
+        self._loaded_resources_count = 0
+        
         # Initialize the new data manager
         self.data_manager = DataManager(game_folder)
         
+        log_info("ResourceManager initialized")
+        
     def load_all_resources(self):
-        """Load all game resources."""
-        self.load_fonts()
-        self.load_images()
-        self.load_audio()
-        self.load_data_files()
+        """Load all game resources with comprehensive error handling."""
+        log_info("Starting resource loading...")
+        self._loading_errors.clear()
+        self._loaded_resources_count = 0
+        
+        try:
+            self.load_fonts()
+            self.load_images()
+            self.load_audio()
+            self.load_data_files()
+            
+            log_info(f"Resource loading completed. Loaded {self._loaded_resources_count} resources.")
+            if self._loading_errors:
+                log_warning(f"Encountered {len(self._loading_errors)} errors during loading:")
+                for error in self._loading_errors:
+                    log_warning(f"  - {error}")
+        except Exception as e:
+            log_error(f"Critical error during resource loading: {e}")
+            raise
         
     def load_fonts(self):
-        """Load all font assets."""
+        """Load all font assets with error handling."""
+        log_debug("Loading fonts...")
         font_path = path.join(self.game_folder, 'Pixellari.ttf')
-        self.fonts = {
-            'font_64': pg.font.Font(font_path, 64),
-            'font_32': pg.font.Font(font_path, 32),
-            'font_16': pg.font.Font(font_path, 16),
-            'font_10': pg.font.Font(font_path, 10)
-        }
+        
+        if not path.exists(font_path):
+            error_msg = f"Font file not found: {font_path}"
+            self._loading_errors.append(error_msg)
+            log_error(error_msg)
+            # Use default pygame font as fallback
+            self.fonts = {
+                'font_64': pg.font.Font(None, 64),
+                'font_32': pg.font.Font(None, 32),
+                'font_16': pg.font.Font(None, 16),
+                'font_10': pg.font.Font(None, 10)
+            }
+            log_warning("Using default system font as fallback")
+        else:
+            try:
+                self.fonts = {
+                    'font_64': pg.font.Font(font_path, 64),
+                    'font_32': pg.font.Font(font_path, 32),
+                    'font_16': pg.font.Font(font_path, 16),
+                    'font_10': pg.font.Font(font_path, 10)
+                }
+                self._loaded_resources_count += 4
+                log_debug("Fonts loaded successfully")
+            except Exception as e:
+                error_msg = f"Error loading font {font_path}: {e}"
+                self._loading_errors.append(error_msg)
+                log_error(error_msg)
+                # Fallback to default font
+                self.fonts = {
+                    'font_64': pg.font.Font(None, 64),
+                    'font_32': pg.font.Font(None, 32),
+                    'font_16': pg.font.Font(None, 16),
+                    'font_10': pg.font.Font(None, 10)
+                }
+                log_warning("Using default system font as fallback")
         
     def load_images(self):
         """Load all image assets."""
@@ -77,13 +130,54 @@ class ResourceManager:
             path.join(textures_path, 'light_.png')).convert_alpha(), (550, 550))
             
     def load_audio(self):
-        """Load all audio assets using the new data manager."""
-        audio_mappings = self.data_manager.get_audio_mappings()
-        audio_list = {}
-        for name, file_path in audio_mappings.items():
-            full_path = path.join(self.game_folder, file_path)
-            audio_list[name] = pg.mixer.Sound(full_path)
-        self.audio = audio_list
+        """Load all audio assets with comprehensive error handling."""
+        log_debug("Loading audio...")
+        try:
+            audio_mappings = self.data_manager.get_audio_mappings()
+            audio_list = {}
+            loaded_count = 0
+            
+            for name, file_path in audio_mappings.items():
+                full_path = path.join(self.game_folder, file_path)
+                try:
+                    if path.exists(full_path):
+                        sound = pg.mixer.Sound(full_path)
+                        # Apply volume settings
+                        sound.set_volume(GameConfig.SFX_VOLUME * GameConfig.MASTER_VOLUME)
+                        audio_list[name] = sound
+                        loaded_count += 1
+                    else:
+                        error_msg = f"Audio file not found: {full_path}"
+                        self._loading_errors.append(error_msg)
+                        log_warning(error_msg)
+                        
+                        # Create silent sound as fallback if enabled
+                        if GameConfig.AUDIO_FALLBACK_ENABLED:
+                            # Create a very short silent sound (1ms)
+                            silent_sound = pg.mixer.Sound(buffer=b'\x00\x00' * 44)  # 44 bytes for 1ms at 44.1kHz
+                            audio_list[name] = silent_sound
+                            log_debug(f"Created silent fallback for {name}")
+                        
+                except pg.error as e:
+                    error_msg = f"Error loading audio {name} from {full_path}: {e}"
+                    self._loading_errors.append(error_msg)
+                    log_error(error_msg)
+                    
+                    # Create silent fallback
+                    if GameConfig.AUDIO_FALLBACK_ENABLED:
+                        silent_sound = pg.mixer.Sound(buffer=b'\x00\x00' * 44)
+                        audio_list[name] = silent_sound
+                        log_debug(f"Created silent fallback for {name} due to loading error")
+                        
+            self.audio = audio_list
+            self._loaded_resources_count += loaded_count
+            log_debug(f"Audio loading completed. Loaded {loaded_count}/{len(audio_mappings)} audio files")
+            
+        except Exception as e:
+            error_msg = f"Critical error loading audio: {e}"
+            self._loading_errors.append(error_msg)
+            log_error(error_msg)
+            self.audio = {}  # Empty audio dict as fallback
         
     def load_data_files(self):
         """Load all data files using the new data manager."""

@@ -10,6 +10,10 @@ from os import path
 from random import *
 
 from game.config.settings import *
+from game.config.game_config import GameConfig
+from game.utils.logger import log_info, log_error, log_warning, log_debug, log_game_event
+from game.utils.performance import get_performance_monitor, time_operation
+from game.utils.audio_utils import create_safe_audio_player
 from game.resources.resource_manager import ResourceManager
 from game.systems.world_manager import WorldManager
 from game.systems.game_state_manager import GameStateManager
@@ -32,27 +36,50 @@ class Game:
     """Main game class that handles the core game loop and state management."""
     
     def __init__(self):
-        """Initialize the game."""
-        self.game_folder = path.dirname(path.dirname(path.dirname(__file__)))  # Go up one level from game/core
+        """Initialize the game with comprehensive error handling."""
+        log_info("Initializing Game...")
+        
+        try:
+            self.game_folder = path.dirname(path.dirname(path.dirname(__file__)))  # Go up one level from game/core
+            log_debug(f"Game folder: {self.game_folder}")
 
-        self._init_pygame()
-        self._init_display()
-        self._init_game_state()
-        self._init_sprite_groups()
-        
-        # Load all resources
-        self.resource_manager = ResourceManager(self.game_folder)
-        self.resource_manager.load_all_resources()
-        
-        # Initialize managers
-        self.world_manager = WorldManager(self)
-        self.game_state_manager = GameStateManager(self)
-        self.render_manager = RenderManager(self)
-        self.input_manager = InputManager(self)
-        
-        # Create input box
-        self.input_commands_txt = InputBox(
-            self, 20, HEIGHT - 60, 600, 40, limit=999)
+            self._init_pygame()
+            self._init_display()
+            self._init_game_state()
+            self._init_sprite_groups()
+            
+            # Load all resources with error handling
+            log_info("Loading game resources...")
+            self.resource_manager = ResourceManager(self.game_folder)
+            self.resource_manager.load_all_resources()
+            
+            # Create safe audio player
+            self.safe_audio = create_safe_audio_player(self.resource_manager.audio)
+            log_debug("Safe audio player created")
+            
+            # Initialize performance monitoring
+            self.performance_monitor = get_performance_monitor()
+            
+            # Initialize managers
+            log_debug("Initializing game managers...")
+            self.world_manager = WorldManager(self)
+            self.game_state_manager = GameStateManager(self)
+            self.render_manager = RenderManager(self)
+            self.input_manager = InputManager(self)
+            
+            # Create input box
+            self.input_commands_txt = InputBox(
+                self, 20, HEIGHT - 60, 600, 40, limit=999)
+            
+            log_info("Game initialization completed successfully")
+            log_game_event("game_initialized", {
+                "debug_mode": GameConfig.DEBUG_MODE,
+                "audio_enabled": len(self.resource_manager.audio) > 0
+            })
+            
+        except Exception as e:
+            log_error(f"Failed to initialize game: {e}")
+            raise
         
     def _init_pygame(self):
         """Initialize pygame modules."""
@@ -98,6 +125,9 @@ class Game:
         self.hostile_mobs_amount = 0
         self.friendly_mobs_amount = 0
         self.respawn_rect = (0, 0, 0, 0)
+        
+        # Track player's current chunk for efficient chunk reloading
+        self.last_player_chunk = None
         
     def _init_sprite_groups(self):
         """Initialize sprite groups."""
@@ -156,6 +186,46 @@ class Game:
     def spawnPoint(self, value):
         """Set spawn point."""
         self._spawnPoint = value
+    
+    # Utility methods for improved game management
+    def play_sound(self, sound_name: str, volume: float = None) -> bool:
+        """Safely play a sound effect."""
+        if hasattr(self, 'safe_audio'):
+            return self.safe_audio.play_sound(sound_name, volume)
+        else:
+            # Fallback for legacy audio system
+            try:
+                if sound_name in self.audioList:
+                    pg.mixer.Sound.play(self.audioList[sound_name])
+                    return True
+            except Exception as e:
+                log_warning(f"Failed to play sound {sound_name}: {e}")
+            return False
+    
+    def play_sound_positional(self, sound_name: str, sound_pos: tuple, max_distance: float = 300.0) -> bool:
+        """Play a sound with positional audio based on player distance."""
+        if hasattr(self, 'safe_audio') and hasattr(self, 'player'):
+            player_pos = (self.player.pos.x, self.player.pos.y)
+            return self.safe_audio.play_sound_positional(sound_name, player_pos, sound_pos, max_distance)
+        return False
+    
+    def cleanup_floating_items(self):
+        """Clean up old floating items to prevent memory leaks."""
+        if len(self.floatingItems) > GameConfig.MAX_FLOATING_ITEMS:
+            # Remove oldest items first
+            items_to_remove = len(self.floatingItems) - GameConfig.MAX_FLOATING_ITEMS
+            for i, item in enumerate(self.floatingItems):
+                if i >= items_to_remove:
+                    break
+                item.kill()
+            log_debug(f"Cleaned up {items_to_remove} floating items")
+    
+    def get_performance_info(self) -> dict:
+        """Get current performance information."""
+        if self.performance_monitor:
+            return self.performance_monitor.get_performance_report()
+        return {}
+        
         
     @property
     def mobList(self):
@@ -271,17 +341,70 @@ class Game:
             FloatingItem(self, item[0], item[1], item[2])
     
     def run(self):
-        """Main game loop."""
+        """Main game loop with performance monitoring."""
+        log_info("Starting main game loop")
+        
         while self.playing:
+            # Start frame timing
+            if self.performance_monitor:
+                self.performance_monitor.start_frame()
+            
+            # Update delta time
             self.dt = self.clock.tick(FPS) / 1000
-            self.events()
-            self.update()
-            self.draw()
+            
+            # Update FPS monitoring
+            if self.performance_monitor:
+                self.performance_monitor.update_fps(self.clock)
+            
+            # Process events
+            with time_operation("events"):
+                self.events()
+            
+            # Update game state
+            with time_operation("update"):
+                self.update()
+            
+            # Render frame
+            with time_operation("render"):
+                self.draw()
+            
+            # Periodic cleanup
+            if self.now % GameConfig.ITEM_CLEANUP_INTERVAL < self.dt * 1000:
+                self.cleanup_floating_items()
+        
+        log_info("Main game loop ended")
     
     def quit(self):
-        """Quit the game."""
-        pg.quit()
-        sys.exit()
+        """Quit the game with proper cleanup."""
+        log_info("Shutting down game...")
+        
+        try:
+            # Save game if needed
+            if hasattr(self, 'hasPlayerStateChanged') and self.hasPlayerStateChanged:
+                log_info("Auto-saving before quit...")
+                try:
+                    self.save()
+                    log_info("Auto-save completed")
+                except Exception as e:
+                    log_error(f"Failed to save before quit: {e}")
+            
+            # Log performance info if available
+            if GameConfig.DEBUG_MODE and self.performance_monitor:
+                perf_info = self.get_performance_info()
+                log_info(f"Final performance stats: {perf_info}")
+            
+            # Log game session info
+            log_game_event("game_shutdown", {
+                "world_name": getattr(self, 'worldName', 'unknown'),
+                "playtime_seconds": getattr(self, 'global_time', 0) / 1000.0
+            })
+            
+        except Exception as e:
+            log_error(f"Error during cleanup: {e}")
+        finally:
+            log_info("Game shutdown complete")
+            pg.quit()
+            sys.exit()
     
     def update(self):
         """Update game state."""
@@ -295,7 +418,15 @@ class Game:
                 self.last_save = self.now
 
         if not self.isGamePaused:
-            self.world_manager.reload_chunks()
+            # Only reload chunks when player moves to a different chunk
+            if hasattr(self, 'player') and hasattr(self.player, 'chunkpos'):
+                current_chunk = (int(self.player.chunkpos.x), int(self.player.chunkpos.y))
+                if self.last_player_chunk != current_chunk:
+                    log_debug(f"Player moved to new chunk: {current_chunk}")
+                    self.world_manager.reload_chunks()
+                    self.last_player_chunk = current_chunk
+            
+            self.world_manager.update()  # Call world manager update for chunk cleanup
             self.moving_sprites.update()
             self.camera.update(self.player.pos)
             self.game_state_manager.update_day_night_cycle()

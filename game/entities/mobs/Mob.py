@@ -350,7 +350,7 @@ class Mob(pg.sprite.Sprite):
                 elif deg >= 315 or deg < 55:
                     self.lastWalkStatement = 3
 
-                pg.mixer.Sound.play(self.game.audioList.get('arrow_shot')) #joue le son préchargée
+                self.game.play_sound('arrow_shot') #joue le son préchargée
                 Projectile(self.game, vec(self.pos.x + 10, self.pos.y + 5) + PROJECTILE_OFFSET.rotate(-deg - 42), deg, 0, math.hypot(dx, dy), 2)
         elif self.Attacktype == 2:
             if self.game.now - self.last_attack > FIRE_RATE * 1.2:
@@ -369,7 +369,7 @@ class Mob(pg.sprite.Sprite):
                     else:
                         self.game.player.die()
                     
-                    pg.mixer.Sound.play(self.game.audioList.get('punch')) #joue le son préchargée
+                    self.game.play_sound('punch') #joue le son préchargée
 
     def colorize(self, image, newColor, alpha):
         image = image.copy()
