@@ -7,25 +7,37 @@ from game.config.settings import *
 
 class Chunk():
 
-    def __init__(self, directory, _seed):
+    def __init__(self, directory, _seed, data_manager=None):
         self.directory = directory
+        self.data_manager = data_manager
         
-        try:
-            f = open(directory + "/map.txt", 'r+')
-        except IOError:
-            f = open(directory + "/map.txt", 'w+')
-
-        file = f.read()
-
+        # Initialize noise generators
         self.tarrainNoise = PerlinNoise(octaves=TERRAIN_OCTAVE, seed=_seed)
         self.biomeNoise = PerlinNoise(octaves=BIOME_OCTAVE, seed=_seed + 1)
         
         self.chunks = {}
-        if file != "":
-            self.chunks = eval(file)
         self.loaded = []
         self.chunkname = str()
         self.unsaved = int()
+        
+        # Load chunks from new format if data_manager is available
+        if data_manager:
+            world_name = directory.split('/')[-1] if '/' in directory else directory.split('\\')[-1]
+            world_name = world_name.replace('saves\\', '').replace('saves/', '')
+            game_data = data_manager.load_game(world_name)
+            if game_data and game_data.get('entities', {}).get('chunks'):
+                self.chunks = game_data['entities']['chunks']
+                return
+        
+        # Fallback to legacy map.txt loading
+        try:
+            f = open(directory + "/map.txt", 'r+')
+            file = f.read()
+            if file != "":
+                self.chunks = eval(file)
+            f.close()
+        except IOError:
+            pass
 
     def get_chunks(self):
         return self.chunks

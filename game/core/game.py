@@ -235,7 +235,7 @@ class Game:
         
         # Create chunk manager
         self.chunkmanager = Chunk(path.join(
-            self.game_folder, 'saves/' + self.worldName), int(self.map.levelSavedData[2]))
+            self.game_folder, 'saves/' + self.worldName), int(self.map.levelSavedData[2]), self.game_state_manager.data_manager)
         
         # Create player
         playerState = self.map.levelSavedData[0].split(':')

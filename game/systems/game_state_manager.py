@@ -117,30 +117,3 @@ class GameStateManager:
             print(f"Failed to save game {self.game.worldName}")
         
         return success
-
-
-class AsyncWrite(threading.Thread):
-    """Asynchronous write thread for saving game data."""
-    
-    def __init__(self, game, lst):
-        threading.Thread.__init__(self)
-        self.game = game
-        self.lst = lst
-
-    def run(self):
-        self.game.isSaving = True
-        for s in self.lst:
-            with open(s[1], 'wt') as f:
-                f.write(s[0])
-
-        if self.game.chunkmanager.unsaved != 0:
-            f = open(path.join(self.game.game_folder, 'saves/' +
-                     self.game.worldName + "/map.txt"), 'w+')
-            f.seek(0)
-            f.truncate()
-            f.write(str(self.game.chunkmanager.chunks))
-            print("Saved {} chunks".format(self.game.chunkmanager.unsaved))
-            self.game.chunkmanager.unsaved = 0
-            f.close()
-
-        self.game.isSaving = False
