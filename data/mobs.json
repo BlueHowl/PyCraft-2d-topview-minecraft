@@ -1,0 +1,76 @@
+{
+  "mobs": [
+    {
+      "name": "bird",
+      "sprite_path": "textures/mobs/bird.png",
+      "spawn_item": [
+        8,
+        4
+      ],
+      "health": 0,
+      "damage": 0,
+      "speed": 0,
+      "ai_type": 10
+    },
+    {
+      "name": "chicken",
+      "sprite_path": "textures/mobs/chicken.png",
+      "spawn_item": [
+        8,
+        3
+      ],
+      "health": 0,
+      "damage": 0,
+      "speed": 0,
+      "ai_type": 15
+    },
+    {
+      "name": "sheep",
+      "sprite_path": "textures/mobs/sheep.png",
+      "spawn_item": [
+        7,
+        4
+      ],
+      "health": 0,
+      "damage": 0,
+      "speed": 0,
+      "ai_type": 20
+    },
+    {
+      "name": "ghost",
+      "sprite_path": "textures/mobs/ghost.png",
+      "spawn_item": [
+        0,
+        0
+      ],
+      "health": 1,
+      "damage": 2,
+      "speed": 2,
+      "ai_type": 30
+    },
+    {
+      "name": "zombie",
+      "sprite_path": "textures/mobs/zombie.png",
+      "spawn_item": [
+        0,
+        0
+      ],
+      "health": 1,
+      "damage": 2,
+      "speed": 2,
+      "ai_type": 25
+    },
+    {
+      "name": "skeleton",
+      "sprite_path": "textures/mobs/skeleton.png",
+      "spawn_item": [
+        2,
+        3
+      ],
+      "health": 1,
+      "damage": 1,
+      "speed": 9,
+      "ai_type": 30
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import pygame as pg
 import json
 from os import path
 from game.config.settings import PLAYER_SPRITE, TILESIZE
+from game.data import DataManager
 
 
 class ResourceManager:
@@ -16,6 +17,9 @@ class ResourceManager:
         self.images = {}
         self.audio = {}
         self.data = {}
+        
+        # Initialize the new data manager
+        self.data_manager = DataManager(game_folder)
         
     def load_all_resources(self):
         """Load all game resources."""
@@ -73,78 +77,121 @@ class ResourceManager:
             path.join(textures_path, 'light_.png')).convert_alpha(), (550, 550))
             
     def load_audio(self):
-        """Load all audio assets."""
+        """Load all audio assets using the new data manager."""
+        audio_mappings = self.data_manager.get_audio_mappings()
         audio_list = {}
-        with open(path.join(self.game_folder, 'data/audio.list'), 'rt') as f:
-            for line in f:
-                l = line.strip().split(':')
-                audio_list[l[0]] = pg.mixer.Sound(
-                    path.join(self.game_folder, l[1]))
+        for name, file_path in audio_mappings.items():
+            full_path = path.join(self.game_folder, file_path)
+            audio_list[name] = pg.mixer.Sound(full_path)
         self.audio = audio_list
         
     def load_data_files(self):
-        """Load all data files."""
-        data_path = path.join(self.game_folder, 'data')
-        
-        # Load mob data
-        mob_list = []
-        with open(path.join(data_path, 'mobs.list'), 'rt') as f:
-            for line in f:
-                l = line.strip().split('|')
-                item = l[2].split(',')
-                mob_list.append((
-                    pg.image.load(path.join(self.game_folder, l[1])).convert_alpha(),
-                    (int(item[0]), int(item[1])),
-                    int(l[3]), int(l[4]), int(l[5]), int(l[6]), l[0]
-                ))
-        self.data['mob_list'] = mob_list
-        
-        # Load item texture coordinates
+        """Load all data files using the new data manager."""
+        # Load item texture coordinates using new data manager
+        items = self.data_manager.get_items()
         item_texture_coordinate = {}
-        with open(path.join(data_path, 'item.list'), 'rt') as f:
-            for line in f:
-                l = line.strip().split(':')
-                item_texture_coordinate[int(l[0])] = (
-                    int(l[1]), int(l[2]), int(l[3]), int(l[4]), l[5]
-                )
+        for item_id, item_data in items.items():
+            item_texture_coordinate[item_id] = (
+                item_data['texture_x'], 
+                item_data['texture_y'], 
+                item_data['max_stack'], 
+                item_data['item_type'], 
+                item_data['name']
+            )
         self.data['item_texture_coordinate'] = item_texture_coordinate
         
-        # Load UI maps
+        # Load crafting recipes using legacy format to maintain compatibility
+        craft_list = []
+        legacy_craft_file = path.join(self.game_folder, 'data', 'craft.list')
+        if path.exists(legacy_craft_file):
+            with open(legacy_craft_file, 'rt') as f:
+                for line in f:
+                    if line.strip():
+                        l = line.strip().split('|')
+                        craft_list.append(l)
+        else:
+            # Try loading from new format and convert back
+            recipes = self.data_manager.get_crafting_recipes()
+            for recipe in recipes:
+                # Convert back to legacy format for compatibility
+                result_id = str(recipe['result_item_id']).zfill(2)
+                ingredients_str = ""
+                if recipe['ingredients']:
+                    ingredient_parts = []
+                    for item_id, quantity in recipe['ingredients']:
+                        ingredient_parts.append(f"{item_id},{quantity}")
+                    ingredients_str = ";".join(ingredient_parts)
+                
+                if recipe['requires_workbench']:
+                    result_id = "10"  # Legacy workbench indicator
+                
+                craft_list.append([result_id, ingredients_str])
+        
+        self.data['craft_list'] = craft_list
+        
+        # Load texture coordinates using new data manager
+        self.data['texture_coordinate'] = self.data_manager.get_texture_coordinates()
+        
+        # Load mob definitions
+        mob_definitions = self.data_manager.get_mob_definitions()
+        mob_list = []
+        for mob in mob_definitions:
+            # Create mob data in legacy format for compatibility
+            if mob['sprite_path']:  # Only if sprite path exists
+                try:
+                    sprite = pg.image.load(path.join(self.game_folder, mob['sprite_path'])).convert_alpha()
+                    mob_tuple = (
+                        sprite,
+                        mob['spawn_item'],
+                        mob['health'],
+                        mob['damage'],
+                        mob['speed'],
+                        mob['ai_type'],
+                        mob['name']
+                    )
+                    mob_list.append(mob_tuple)
+                except Exception as e:
+                    print(f"Error loading mob sprite {mob['sprite_path']}: {e}")
+        self.data['mob_list'] = mob_list
+        
+        # Load UI maps (these remain file-based for now)
+        data_path = path.join(self.game_folder, 'data')
         ui_maps_path = path.join(data_path, 'ui_maps')
         for map_name in ['menu', 'inventory', 'furnaceUi', 'chestUi']:
             map_data = []
-            with open(path.join(ui_maps_path, f'{map_name}.map'), 'rt') as f:
-                for line in f:
-                    map_data.append(line.strip())
+            map_file = path.join(ui_maps_path, f'{map_name}.map')
+            if path.exists(map_file):
+                with open(map_file, 'rt') as f:
+                    for line in f:
+                        map_data.append(line.strip())
             self.data[f'{map_name}_map'] = map_data
-            
-        # Load craft list
-        craft_list = []
-        with open(path.join(data_path, 'craft.list'), 'rt') as f:
-            for line in f:
-                l = line.strip().split('|')
-                craft_list.append(l)
-        self.data['craft_list'] = craft_list
         
+        # Load remaining legacy files that need separate migration
+        self._load_legacy_assignment_and_fuel_data(data_path)
+    
+    def _load_legacy_assignment_and_fuel_data(self, data_path):
+        """Load legacy assignment and fuel data (temporary until migrated)."""
         # Load item assignment list
         item_assignment_list = {}
-        with open(path.join(data_path, 'item_assignement.list'), 'rt') as f:
-            for line in f:
-                l = line.strip().split(':')
-                item_assignment_list[int(l[0])] = l[1:]
+        assignment_file = path.join(data_path, 'item_assignement.list')
+        if path.exists(assignment_file):
+            with open(assignment_file, 'rt') as f:
+                for line in f:
+                    l = line.strip().split(':')
+                    if len(l) > 1:
+                        item_assignment_list[int(l[0])] = l[1:]
         self.data['item_assignment_list'] = item_assignment_list
         
         # Load furnace fuel list
         furnace_fuel_list = {}
-        with open(path.join(data_path, 'furnace_fuels.list'), 'rt') as f:
-            for line in f:
-                l = line.strip().split(':')
-                furnace_fuel_list[int(l[0])] = l[1:]
+        fuel_file = path.join(data_path, 'furnace_fuels.list')
+        if path.exists(fuel_file):
+            with open(fuel_file, 'rt') as f:
+                for line in f:
+                    l = line.strip().split(':')
+                    if len(l) > 1:
+                        furnace_fuel_list[int(l[0])] = l[1:]
         self.data['furnace_fuel_list'] = furnace_fuel_list
-        
-        # Load texture coordinates
-        with open(path.join(data_path, 'texCoords.txt'), 'rt') as f:
-            self.data['texture_coordinate'] = json.loads(f.read())
     
     def get_font(self, size_name):
         """Get a font by size name."""

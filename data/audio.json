@@ -1,0 +1,68 @@
+{
+  "mappings": [
+    {
+      "name": "menu_click",
+      "file_path": "audio/menuClick.ogg"
+    },
+    {
+      "name": "menu_hover",
+      "file_path": "audio/menuHover.ogg"
+    },
+    {
+      "name": "drop_item",
+      "file_path": "audio/itemDrop.ogg"
+    },
+    {
+      "name": "arrow_shot",
+      "file_path": "audio/arrowShot.ogg"
+    },
+    {
+      "name": "axe_harvest",
+      "file_path": "audio/axeHarvest.ogg"
+    },
+    {
+      "name": "pickaxe_harvest",
+      "file_path": "audio/pickaxeHarvest.ogg"
+    },
+    {
+      "name": "block",
+      "file_path": "audio/block.ogg"
+    },
+    {
+      "name": "heal_bonus",
+      "file_path": "audio/healBonus.ogg"
+    },
+    {
+      "name": "max_health_bonus",
+      "file_path": "audio/maxHealthBonus.ogg"
+    },
+    {
+      "name": "blade_hit",
+      "file_path": "audio/bladeHit.ogg"
+    },
+    {
+      "name": "workbench_place",
+      "file_path": "audio/block_place/workbenchPlace.ogg"
+    },
+    {
+      "name": "wood_place",
+      "file_path": "audio/block_place/woodPlace.ogg"
+    },
+    {
+      "name": "stone_place",
+      "file_path": "audio/block_place/stonePlace.ogg"
+    },
+    {
+      "name": "wool_place",
+      "file_path": "audio/block_place/woolPlace.ogg"
+    },
+    {
+      "name": "punch",
+      "file_path": "audio/punch.ogg"
+    },
+    {
+      "name": "craft",
+      "file_path": "audio/craft.ogg"
+    }
+  ]
+}

@@ -6,6 +6,8 @@ import pygame as pg
 
 from game.ui.InputBox import InputBox
 from game.config.settings import BLACK, TILESIZE, TITLE, TOTAL_SLOTS, WHITE, WIDTH
+from game.data import DataManager
+
 
 class Menu(pg.sprite.Sprite):
     def __init__(self, game, xOffset, yOffset, game_folder):
@@ -13,6 +15,9 @@ class Menu(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.gameFolder = game_folder
+        
+        # Initialize data manager for world operations
+        self.data_manager = DataManager(game_folder)
 
         self.image = pg.Surface((len(game.menuData[0]) * TILESIZE, len(game.menuData) * TILESIZE), pg.SRCALPHA, 32)
 
@@ -28,10 +33,13 @@ class Menu(pg.sprite.Sprite):
 
         self.worlds_list = []
 
-        wLst = os.listdir(self.gameFolder + '/saves')
-        if wLst:
-            for world in wLst:
-                self.worlds_list.append((world, str(datetime.fromtimestamp(os.path.getmtime(self.gameFolder + '/saves/' + world))) ))
+        # Load worlds using the new data manager
+        worlds = self.data_manager.list_worlds()
+        for world in worlds:
+            world_path = os.path.join(self.gameFolder, 'saves', world)
+            if os.path.exists(world_path):
+                timestamp = os.path.getmtime(world_path)
+                self.worlds_list.append((world, str(datetime.fromtimestamp(timestamp))))
 
         self.rect = self.image.get_rect() #assignation de la variable rect
 
@@ -162,30 +170,24 @@ class Menu(pg.sprite.Sprite):
                 if self.current[0] < 4:
                     self.toggleGui(self.current[0])
                 elif self.current[0] == 4:
-                    x = str(randint(-9999, 9999))
-                    y = str(randint(-9999, 9999))
-                    playerState = x + ':' + y + ':0:20:20'
-                    txtSave = playerState + '\n' + str(TOTAL_SLOTS * [[0, 0]]) + '\n' + str(abs(hash(self.seed))) + '\n' + x + ':' + y + '\n0\n255'
-
-                    os.mkdir(self.gameFolder + '/saves/' + self.world_name)
-
-                    with open(self.gameFolder + '/saves/' + self.world_name + '/level.save', 'w') as f: #ouverture du document pathfinding.map en écriture
-                        f.write(txtSave)
-
-                    with open(self.gameFolder + '/saves/' + self.world_name + '/signs.txt', 'w') as f:
-                        f.write('{}')
-                    with open(self.gameFolder + '/saves/' + self.world_name + '/mobs.txt', 'w') as f:
-                        f.write('{}')
-                    with open(self.gameFolder + '/saves/' + self.world_name + '/floatingItems.txt', 'w') as f:
-                        f.write('[]')
-                    with open(self.gameFolder + '/saves/' + self.world_name + '/chests.txt', 'w') as f:
-                        f.write('{}')
-                    with open(self.gameFolder + '/saves/' + self.world_name + '/furnaces.txt', 'w') as f:
-                        f.write('{}')
-
-                    self.game.worldName = self.world_name
-                    self.game.playing = True
-                    self.kill()
+                    # Create new world using the data manager
+                    x = randint(-9999, 9999)
+                    y = randint(-9999, 9999)
+                    spawn_point = (x, y)
+                    
+                    # Create the new world using data manager
+                    success = self.data_manager.create_new_world(
+                        world_name=self.world_name,
+                        seed=str(abs(hash(self.seed))),
+                        spawn_point=spawn_point
+                    )
+                    
+                    if success:
+                        self.game.worldName = self.world_name
+                        self.game.playing = True
+                        self.kill()
+                    else:
+                        print(f"Failed to create world: {self.world_name}")
 
             pg.mixer.Sound.play(self.game.audioList.get('menu_click')) #joue le son préchargée
 

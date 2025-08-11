@@ -28,7 +28,14 @@ class Player(pg.sprite.Sprite): #classe du joueur
         self.tilepos = vec(int(self.pos.x / TILESIZE), int(self.pos.y / TILESIZE))
         self.chunkpos = self.tilepos * CHUNKSIZE
 
-        self.health = int(self.game.map.levelSavedData[0].split(':')[3]) #PLAYER_MAXLIFE #définition de la variable health à PLAYER_MAXLIFE
+        # Parse health from the correct position in legacy format: x:y:0:health:maxhealth
+        pos_data = self.game.map.levelSavedData[0].split(':')
+        if len(pos_data) >= 5:
+            self.health = int(pos_data[3])  # Health is at index 3
+        elif len(pos_data) >= 3:
+            self.health = int(pos_data[2])  # Fallback for old format
+        else:
+            self.health = 20  # Default health
         #self.maxHealth = PLAYER_MAXLIFE #définition de la variable maxHealth à PLAYER_MAXLIFE
 
         self.forwardIdle = game.palyer_sprite.subsurface((0*TILESIZE, 0*TILESIZE, TILESIZE, TILESIZE)).copy() #définition de la texture au repos vers l'avant

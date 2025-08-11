@@ -226,8 +226,8 @@ class Game:
         """Initialize a new game."""
         pg.mouse.set_visible(False)
         
-        # Create map
-        self.map = Map(path.join(self.game_folder, 'saves/' + self.worldName))
+        # Create map with game folder for new data manager
+        self.map = Map(path.join(self.game_folder, 'saves/' + self.worldName), self.game_folder)
         
         # Create pathfinding matrix
         self.pathfind = [vec(0, 0), [[1] * (CHUNKRENDERX * 2 + 2) * CHUNKSIZE] * (
@@ -239,12 +239,14 @@ class Game:
         
         # Create player
         playerState = self.map.levelSavedData[0].split(':')
-        self.player = Player(self, int(playerState[0]), int(playerState[1]), int(
-            playerState[2]))
+        # Convert tile coordinates to pixel coordinates
+        player_x = int(playerState[0]) * TILESIZE
+        player_y = int(playerState[1]) * TILESIZE
+        self.player = Player(self, player_x, player_y, 0)  # lws = 0 as default
         
-        # Set spawn point
+        # Set spawn point (convert from tile coordinates to pixel coordinates)
         spawn = self.map.levelSavedData[3].split(':')
-        self.spawnPoint = vec(int(spawn[0]), int(spawn[1]))
+        self.spawnPoint = vec(int(spawn[0]) * TILESIZE, int(spawn[1]) * TILESIZE)
         
         # Load saved game state
         self.global_time = int(self.map.levelSavedData[4])

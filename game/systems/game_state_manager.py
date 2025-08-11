@@ -5,6 +5,7 @@ import pygame as pg
 import threading
 from os import path
 from game.config.settings import *
+from game.data import DataManager
 
 
 class GameStateManager:
@@ -12,6 +13,7 @@ class GameStateManager:
     
     def __init__(self, game):
         self.game = game
+        self.data_manager = DataManager(game.game_folder)
         
     def update_day_night_cycle(self):
         """Update the day/night cycle."""
@@ -43,7 +45,7 @@ class GameStateManager:
     def sleep(self):
         """Handle player sleeping."""
         if self.game.isNight:
-            self.game.player.pos = self.game.spawnPoint * TILESIZE
+            self.game.player.pos = self.game.spawnPoint  # spawnPoint is already in pixel coordinates
             self.skip_night()
             self.game.player.health = self.game.player.lifebar.maxHealth
             self.game.player.lifebar.updateHealth(self.game.player.health)
@@ -65,27 +67,56 @@ class GameStateManager:
         pg.mixer.Sound.play(self.game.audioList.get('drop_item'))
 
     def save_game(self):
-        """Save the game state."""
-        playerState = str(int(self.game.player.pos.x // TILESIZE)) + ':' + str(int(self.game.player.pos.y // TILESIZE)) + ':' + str(self.game.player.health)
+        """Save the game state using the new data manager."""
+        # Prepare player state data
+        player_state = {
+            'position': (int(self.game.player.pos.x // TILESIZE), int(self.game.player.pos.y // TILESIZE)),
+            'health': self.game.player.health,
+            'max_health': getattr(self.game.player.lifebar, 'maxHealth', 255),
+            'inventory': self.game.player.hotbar.itemList
+        }
         
-        lst = []
-        lst.append((playerState + '\n' + str(self.game.player.hotbar.itemList) + '\n' + self.game.map.levelSavedData[2] + '\n' + str(int(self.game.spawnPoint.x)) + ':' + str(int(
-            self.game.spawnPoint.y)) + '\n' + str(self.game.global_time) + '\n' + str(self.game.night_shade), path.join(self.game.game_folder, 'saves/' + self.game.worldName + '/level.save')))
-        self.game.hasPlayerStateChanged = False
-
-        floatingItemsList = []
+        # Prepare world state data
+        world_state = {
+            'seed': getattr(self.game.map, 'levelSavedData', ['', '', '0'])[2] if hasattr(self.game, 'map') else '0',
+            'spawn_point': (int(self.game.spawnPoint.x // TILESIZE), int(self.game.spawnPoint.y // TILESIZE)),  # Convert to tile coords
+            'global_time': self.game.global_time,
+            'night_shade': self.game.night_shade
+        }
+        
+        # Prepare entity data
+        floating_items_list = []
         for item in self.game.floatingItems:
-            floatingItemsList.append([round(item.pos.x, 2), round(item.pos.y, 2), item.item])
-
-        lst.append((str(floatingItemsList), path.join(
-            self.game.game_folder, 'saves/' + self.game.worldName + '/floatingItems.txt')))
-        lst.append((str(self.game.map.chestsData).replace("'", '"'), path.join(
-            self.game.game_folder, 'saves/' + self.game.worldName + '/chests.txt')))
-        lst.append((str(self.game.map.furnacesData).replace("'", '"'), path.join(
-            self.game.game_folder, 'saves/' + self.game.worldName + '/furnaces.txt')))
-
-        save = AsyncWrite(self.game, lst)
-        save.start()
+            floating_items_list.append([round(item.pos.x, 2), round(item.pos.y, 2), item.item])
+        
+        entities = {
+            'floating_items': floating_items_list,
+            'chests': getattr(self.game.map, 'chestsData', {}),
+            'furnaces': getattr(self.game.map, 'furnacesData', {}),
+            'mobs': getattr(self.game.map, 'MobsData', {}),
+            'signs': getattr(self.game.map, 'levelSignData', {}),
+            'chunks': getattr(self.game.chunkmanager, 'chunks', {}) if hasattr(self.game, 'chunkmanager') else {}
+        }
+        
+        # Save using the new data manager
+        success = self.data_manager.save_game(
+            world_name=self.game.worldName,
+            player_state=player_state,
+            world_state=world_state,
+            entities=entities
+        )
+        
+        if success:
+            self.game.hasPlayerStateChanged = False
+            # Reset unsaved chunk counter
+            if hasattr(self.game, 'chunkmanager'):
+                self.game.chunkmanager.unsaved = 0
+            
+            print(f"Game saved successfully to {self.game.worldName}")
+        else:
+            print(f"Failed to save game {self.game.worldName}")
+        
+        return success
 
 
 class AsyncWrite(threading.Thread):

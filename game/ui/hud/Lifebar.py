@@ -9,7 +9,16 @@ class Lifebar(pg.sprite.Sprite):
         self.yOffset = yOffset
         self.x = xOffset #définition de la variable x
         self.y = yOffset #définition de la variable y
-        self.maxHealth = int(self.game.map.levelSavedData[0].split(':')[4])
+        # Try to get maxHealth from the correct position in legacy format
+        player_data = self.game.map.levelSavedData[0].split(':')
+        if len(player_data) >= 5:
+            # Format: x:y:0:health:maxHealth
+            self.maxHealth = int(player_data[4])
+        elif len(player_data) >= 3:
+            # Fallback: use default maxHealth
+            self.maxHealth = 20  # Default for legacy saves
+        else:
+            self.maxHealth = 20  # Default
 
         self.healthMatrice = [] #définition d'une matrice de coeurs
         self.updateHealth(health)
