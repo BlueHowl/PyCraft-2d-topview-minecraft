@@ -10,14 +10,14 @@ class Map:
             self.data_manager = DataManager(game_folder)
             world_name = directoryname.split('/')[-1] if '/' in directoryname else directoryname.split('\\')[-1]
             
-            # Try loading from new data manager first
+            # Load from new data manager
             game_data = self.data_manager.load_game(world_name)
             if game_data:
                 self._load_from_new_format(game_data)
                 return
         
-        # Fallback to legacy loading
-        self._load_legacy_format(directoryname)
+        # Create default state if no valid save data found
+        self._create_default_state()
     
     def _load_from_new_format(self, game_data):
         """Load game data from new JSON format."""
@@ -47,54 +47,13 @@ class Map:
         
         self.levelSavedData = [pos_health, inventory_json, seed, spawn, global_time, night_shade]
     
-    def _load_legacy_format(self, directoryname):
-        """Load game data from legacy format."""
+    def _create_default_state(self):
+        """Create default state for new worlds or when save data is unavailable."""
         self.levelSignData = {}
-        try:
-            with open(directoryname + '/signs.txt', 'rt') as f:
-                for line in f:
-                    l = line.strip().split(':')
-                    # Handle signs data if needed
-        except:
-            pass
-
         self.MobsData = {}
-        try:
-            with open(directoryname + '/mobs.txt', 'rt') as f:
-                for line in f:
-                    l = line.strip().split(':')
-                    # Handle mobs data if needed
-        except:
-            pass
-
         self.floatingItemsData = []
-        try:
-            with open(directoryname + '/floatingItems.txt', 'rt') as f:
-                self.floatingItemsData = json.loads(f.read())
-        except:
-            self.floatingItemsData = []
-
         self.chestsData = {}
-        try:
-            with open(directoryname + '/chests.txt', 'rt') as f:
-                self.chestsData = json.loads(f.read())
-        except:
-            self.chestsData = {}
-
         self.furnacesData = {}
-        try:
-            with open(directoryname + '/furnaces.txt', 'rt') as f:
-                self.furnacesData = json.loads(f.read())
-                for furnace in self.furnacesData.values():
-                    furnace[3] = 0  # Reset furnace timers
-        except:
-            self.furnacesData = {}
-
-        self.levelSavedData = []
-        try:
-            with open(directoryname + '/level.save', 'rt') as f:
-                for line in f:
-                    self.levelSavedData.append(line.strip())
-        except:
-            # Default values if file doesn't exist
-            self.levelSavedData = ['0:0:255', '[]', '0', '0:0', '0', '255']
+        
+        # Default values for level data: [position:health, inventory, seed, spawn, time, night_shade]
+        self.levelSavedData = ['0:0:0:20:20', '[]', '0', '0:0', '0', '255']

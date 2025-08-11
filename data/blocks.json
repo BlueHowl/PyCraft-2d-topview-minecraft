@@ -1,0 +1,224 @@
+{
+  "blocks": {
+    "00": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 1,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "water"
+    },
+    "01": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 0,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "grass"
+    },
+    "02": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 0,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "solid_grass"
+    },
+    "03": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 4,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "stairLeft"
+    },
+    "04": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 5,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "stairTop"
+    },
+    "05": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 6,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "stairRight"
+    },
+    "06": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 7,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "stairBottom"
+    },
+    "07": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 2,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "dirt"
+    },
+    "1s": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 3,
+      "texture_y": 2,
+      "block_type": 2,
+      "health": 30,
+      "drop_items": [25, 1],
+      "name": "stone_block"
+    },
+    "1z": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 5,
+      "texture_y": 1,
+      "block_type": 1,
+      "health": 20,
+      "drop_items": [24, 1],
+      "name": "wood_block"
+    },
+    "1y": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 9,
+      "texture_y": 0,
+      "block_type": 1,
+      "health": 25,
+      "drop_items": [3, 1],
+      "name": "workbench"
+    },
+    "117": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 9,
+      "texture_y": 1,
+      "block_type": 2,
+      "health": 35,
+      "drop_items": [29, 1],
+      "name": "furnace"
+    },
+    "118": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 9,
+      "texture_y": 2,
+      "block_type": 2,
+      "health": 40,
+      "drop_items": [26, 2],
+      "name": "iron_ore_block"
+    },
+    "119": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 10,
+      "texture_y": 2,
+      "block_type": 3,
+      "health": 50,
+      "drop_items": [28, 1],
+      "name": "diamond_ore_block"
+    },
+    "120": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 10,
+      "texture_y": 0,
+      "block_type": 1,
+      "health": 25,
+      "drop_items": [30, 1],
+      "name": "chest"
+    },
+    "121": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 11,
+      "texture_y": 2,
+      "block_type": 2,
+      "health": 45,
+      "drop_items": [31, 1],
+      "name": "iron_block"
+    },
+    "122": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 12,
+      "texture_y": 2,
+      "block_type": 3,
+      "health": 55,
+      "drop_items": [32, 1],
+      "name": "diamond_block"
+    },
+    "123": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 13,
+      "texture_y": 2,
+      "block_type": 2,
+      "health": 35,
+      "drop_items": [33, 3],
+      "name": "coal_ore_block"
+    },
+    "124": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 14,
+      "texture_y": 2,
+      "block_type": 2,
+      "health": 40,
+      "drop_items": [35, 1],
+      "name": "coal_block"
+    },
+    "025": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 11,
+      "texture_y": 0,
+      "block_type": 1,
+      "health": 5,
+      "drop_items": [36, 1],
+      "name": "torch_block"
+    },
+    "026": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 10,
+      "texture_y": 1,
+      "block_type": 1,
+      "health": 15,
+      "drop_items": [37, 1],
+      "name": "sleeping_bag"
+    },
+    "127": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 11,
+      "texture_y": 1,
+      "block_type": 1,
+      "health": 20,
+      "drop_items": [38, 1],
+      "name": "wool_block"
+    }
+  }
+}

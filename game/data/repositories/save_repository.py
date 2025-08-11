@@ -50,13 +50,13 @@ class SaveRepository:
         world_path = os.path.join(self.saves_path, world_name)
         main_save_path = os.path.join(world_path, 'save.json')
         
-        # Try loading new JSON format first
+        # Load only from new JSON format
         save_data = JSONSerializer.load_from_file(main_save_path)
         if save_data:
             return self._create_game_save_from_json(world_name, save_data)
         
-        # Fallback to legacy format
-        return self._load_legacy_save(world_name)
+        # Return None if no valid save found
+        return None
     
     def _create_game_save_from_json(self, world_name: str, save_data: dict) -> GameSave:
         """Create GameSave object from JSON data."""
@@ -88,53 +88,6 @@ class SaveRepository:
             signs=save_data.get('signs', {}),
             chunks=save_data.get('chunks', {})
         )
-    
-    def _load_legacy_save(self, world_name: str) -> Optional[GameSave]:
-        """Load game from legacy format and convert to new format."""
-        world_path = os.path.join(self.saves_path, world_name)
-        
-        try:
-            # Load legacy files
-            level_save_path = os.path.join(world_path, 'level.save')
-            if not os.path.exists(level_save_path):
-                return None
-            
-            # Read level.save
-            with open(level_save_path, 'r') as f:
-                level_data = [line.strip() for line in f.readlines()]
-            
-            # Create player and world state from legacy data
-            player_state = PlayerState.from_legacy_data(level_data)
-            world_state = WorldState.from_legacy_data(level_data)
-            
-            # Load other legacy files
-            floating_items = self._load_legacy_json_file(world_path, 'floatingItems.txt')
-            chests = self._load_legacy_json_file(world_path, 'chests.txt')
-            furnaces = self._load_legacy_json_file(world_path, 'furnaces.txt')
-            mobs = self._load_legacy_json_file(world_path, 'mobs.txt')
-            signs = self._load_legacy_json_file(world_path, 'signs.txt')
-            chunks = self._load_legacy_json_file(world_path, 'map.txt')
-            
-            game_save = GameSave(
-                world_name=world_name,
-                player_state=player_state,
-                world_state=world_state,
-                floating_items=floating_items or [],
-                chests=chests or {},
-                furnaces=furnaces or {},
-                mobs=mobs or {},
-                signs=signs or {},
-                chunks=chunks or {}
-            )
-            
-            # Save in new format for future loads
-            self.save_game(game_save)
-            
-            return game_save
-            
-        except Exception as e:
-            print(f"Error loading legacy save {world_name}: {e}")
-            return None
     
     def _load_legacy_json_file(self, world_path: str, filename: str) -> Optional[dict]:
         """Load a legacy JSON file."""

@@ -28,16 +28,6 @@ class Chunk():
             if game_data and game_data.get('entities', {}).get('chunks'):
                 self.chunks = game_data['entities']['chunks']
                 return
-        
-        # Fallback to legacy map.txt loading
-        try:
-            f = open(directory + "/map.txt", 'r+')
-            file = f.read()
-            if file != "":
-                self.chunks = eval(file)
-            f.close()
-        except IOError:
-            pass
 
     def get_chunks(self):
         return self.chunks

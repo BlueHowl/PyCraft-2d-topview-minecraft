@@ -136,7 +136,7 @@
       "requires_workbench": false
     },
     {
-      "result_item_id": 10,
+      "result_item_id": 12,
       "result_quantity": 1,
       "ingredients": [
         [
@@ -146,16 +146,12 @@
         [
           4,
           4
-        ],
-        [
-          12,
-          1
         ]
       ],
       "requires_workbench": true
     },
     {
-      "result_item_id": 10,
+      "result_item_id": 13,
       "result_quantity": 1,
       "ingredients": [
         [
@@ -165,16 +161,12 @@
         [
           10,
           4
-        ],
-        [
-          13,
-          1
         ]
       ],
       "requires_workbench": true
     },
     {
-      "result_item_id": 10,
+      "result_item_id": 14,
       "result_quantity": 1,
       "ingredients": [
         [
@@ -184,16 +176,12 @@
         [
           27,
           5
-        ],
-        [
-          14,
-          1
         ]
       ],
       "requires_workbench": true
     },
     {
-      "result_item_id": 10,
+      "result_item_id": 15,
       "result_quantity": 1,
       "ingredients": [
         [
@@ -203,16 +191,12 @@
         [
           28,
           5
-        ],
-        [
-          15,
-          1
         ]
       ],
       "requires_workbench": true
     },
     {
-      "result_item_id": 10,
+      "result_item_id": 16,
       "result_quantity": 1,
       "ingredients": [
         [
@@ -222,16 +206,12 @@
         [
           4,
           3
-        ],
-        [
-          16,
-          1
         ]
       ],
       "requires_workbench": true
     },
     {
-      "result_item_id": 10,
+      "result_item_id": 17,
       "result_quantity": 1,
       "ingredients": [
         [
@@ -241,16 +221,12 @@
         [
           10,
           3
-        ],
-        [
-          17,
-          1
         ]
       ],
       "requires_workbench": true
     },
     {
-      "result_item_id": 10,
+      "result_item_id": 18,
       "result_quantity": 1,
       "ingredients": [
         [
@@ -260,16 +236,12 @@
         [
           27,
           4
-        ],
-        [
-          18,
-          1
         ]
       ],
       "requires_workbench": true
     },
     {
-      "result_item_id": 10,
+      "result_item_id": 19,
       "result_quantity": 1,
       "ingredients": [
         [
@@ -279,16 +251,12 @@
         [
           28,
           4
-        ],
-        [
-          19,
-          1
         ]
       ],
       "requires_workbench": true
     },
     {
-      "result_item_id": 10,
+      "result_item_id": 1,
       "result_quantity": 1,
       "ingredients": [
         [
@@ -298,17 +266,13 @@
         [
           7,
           3
-        ],
-        [
-          1,
-          1
         ]
       ],
       "requires_workbench": true
     },
     {
-      "result_item_id": 10,
-      "result_quantity": 1,
+      "result_item_id": 2,
+      "result_quantity": 4,
       "ingredients": [
         [
           8,
@@ -321,16 +285,12 @@
         [
           10,
           1
-        ],
-        [
-          2,
-          4
         ]
       ],
       "requires_workbench": true
     },
     {
-      "result_item_id": 10,
+      "result_item_id": 20,
       "result_quantity": 1,
       "ingredients": [
         [
@@ -340,16 +300,12 @@
         [
           4,
           5
-        ],
-        [
-          20,
-          1
         ]
       ],
       "requires_workbench": true
     },
     {
-      "result_item_id": 10,
+      "result_item_id": 21,
       "result_quantity": 1,
       "ingredients": [
         [
@@ -359,16 +315,12 @@
         [
           10,
           6
-        ],
-        [
-          21,
-          1
         ]
       ],
       "requires_workbench": true
     },
     {
-      "result_item_id": 10,
+      "result_item_id": 22,
       "result_quantity": 1,
       "ingredients": [
         [
@@ -378,16 +330,12 @@
         [
           27,
           6
-        ],
-        [
-          22,
-          1
         ]
       ],
       "requires_workbench": true
     },
     {
-      "result_item_id": 10,
+      "result_item_id": 23,
       "result_quantity": 1,
       "ingredients": [
         [
@@ -397,107 +345,79 @@
         [
           28,
           6
-        ],
-        [
-          23,
-          1
         ]
       ],
       "requires_workbench": true
     },
     {
-      "result_item_id": 11,
+      "result_item_id": 31,
       "result_quantity": 1,
       "ingredients": [
         [
           27,
           10
-        ],
-        [
-          31,
-          1
         ]
       ],
       "requires_workbench": false
     },
     {
-      "result_item_id": 11,
+      "result_item_id": 32,
       "result_quantity": 1,
       "ingredients": [
         [
           28,
           10
-        ],
-        [
-          32,
-          1
         ]
       ],
       "requires_workbench": false
     },
     {
-      "result_item_id": 11,
+      "result_item_id": 29,
       "result_quantity": 1,
       "ingredients": [
         [
           10,
           10
-        ],
-        [
-          29,
-          1
         ]
       ],
       "requires_workbench": false
     },
     {
-      "result_item_id": 11,
+      "result_item_id": 30,
       "result_quantity": 1,
       "ingredients": [
         [
           4,
           10
-        ],
-        [
-          30,
-          1
         ]
       ],
       "requires_workbench": false
     },
     {
-      "result_item_id": 11,
+      "result_item_id": 35,
       "result_quantity": 1,
       "ingredients": [
         [
           33,
           10
-        ],
-        [
-          35,
-          1
         ]
       ],
       "requires_workbench": false
     },
     {
-      "result_item_id": 11,
+      "result_item_id": 38,
       "result_quantity": 1,
       "ingredients": [
         [
           7,
           10
-        ],
-        [
-          38,
-          1
         ]
       ],
       "requires_workbench": false
     },
     {
-      "result_item_id": 11,
-      "result_quantity": 1,
+      "result_item_id": 36,
+      "result_quantity": 3,
       "ingredients": [
         [
           11,
@@ -506,17 +426,13 @@
         [
           33,
           5
-        ],
-        [
-          36,
-          3
         ]
       ],
       "requires_workbench": false
     },
     {
-      "result_item_id": 11,
-      "result_quantity": 1,
+      "result_item_id": 36,
+      "result_quantity": 3,
       "ingredients": [
         [
           11,
@@ -525,31 +441,23 @@
         [
           34,
           2
-        ],
-        [
-          36,
-          3
         ]
       ],
       "requires_workbench": false
     },
     {
-      "result_item_id": 11,
+      "result_item_id": 37,
       "result_quantity": 1,
       "ingredients": [
         [
           7,
           8
-        ],
-        [
-          37,
-          1
         ]
       ],
       "requires_workbench": false
     },
     {
-      "result_item_id": 13,
+      "result_item_id": 5,
       "result_quantity": 1,
       "ingredients": [
         [
@@ -559,25 +467,17 @@
         [
           8,
           4
-        ],
-        [
-          5,
-          1
         ]
       ],
       "requires_workbench": false
     },
     {
-      "result_item_id": 13,
+      "result_item_id": 6,
       "result_quantity": 1,
       "ingredients": [
         [
           5,
           5
-        ],
-        [
-          6,
-          1
         ]
       ],
       "requires_workbench": false

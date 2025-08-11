@@ -20,7 +20,7 @@ class Player(pg.sprite.Sprite): #classe du joueur
         pg.sprite.Sprite.__init__(self, self.groups) #définitions du joueur dans les groupes de textures
         self.game = game #récupération de l'instance de la classe principale du jeu
         self.image = pg.Surface((TILESIZE, TILESIZE), pg.SRCALPHA, 32) #création d'un surface transparente (32*32)
-        #self.image.blit(game.palyer_sprite.subsurface((1*TILESIZE, 0*TILESIZE, TILESIZE, TILESIZE)), (0, 0))
+        #self.image.blit(game.player_sprite.subsurface((1*TILESIZE, 0*TILESIZE, TILESIZE, TILESIZE)), (0, 0))
         self.rect = self.image.get_rect() #assignation de la variable rect
         self.vel = vec(0, 0) #assignation de la variable vel(velocité) par un vecteur 2d nul
         self.pos = vec(x, y) #assignation de la variable pos(position) par un vecteur 2d au positions
@@ -38,15 +38,15 @@ class Player(pg.sprite.Sprite): #classe du joueur
             self.health = 20  # Default health
         #self.maxHealth = PLAYER_MAXLIFE #définition de la variable maxHealth à PLAYER_MAXLIFE
 
-        self.forwardIdle = game.palyer_sprite.subsurface((0*TILESIZE, 0*TILESIZE, TILESIZE, TILESIZE)).copy() #définition de la texture au repos vers l'avant
-        self.backwardIdle = game.palyer_sprite.subsurface((0*TILESIZE, 1*TILESIZE, TILESIZE, TILESIZE)).copy() #définition de la texture au repos vers l'arrière
-        self.leftIdle = game.palyer_sprite.subsurface((0*TILESIZE, 2*TILESIZE, TILESIZE, TILESIZE)).copy() #définition de la texture au repos vers la gauche
-        self.rightIdle = game.palyer_sprite.subsurface((0*TILESIZE, 3*TILESIZE, TILESIZE, TILESIZE)).copy() #définition de la texture au repos vers la droite
+        self.forwardIdle = game.player_sprite.subsurface((0*TILESIZE, 0*TILESIZE, TILESIZE, TILESIZE)).copy() #définition de la texture au repos vers l'avant
+        self.backwardIdle = game.player_sprite.subsurface((0*TILESIZE, 1*TILESIZE, TILESIZE, TILESIZE)).copy() #définition de la texture au repos vers l'arrière
+        self.leftIdle = game.player_sprite.subsurface((0*TILESIZE, 2*TILESIZE, TILESIZE, TILESIZE)).copy() #définition de la texture au repos vers la gauche
+        self.rightIdle = game.player_sprite.subsurface((0*TILESIZE, 3*TILESIZE, TILESIZE, TILESIZE)).copy() #définition de la texture au repos vers la droite
 
-        self.walkForward = [game.palyer_sprite.subsurface((1*TILESIZE, 1*TILESIZE, TILESIZE, TILESIZE)).copy(), game.palyer_sprite.subsurface((2*TILESIZE, 1*TILESIZE, TILESIZE, TILESIZE)).copy()] #définition de la liste de texture de marche avant
-        self.walkBackward = [game.palyer_sprite.subsurface((1*TILESIZE, 0*TILESIZE, TILESIZE, TILESIZE)).copy(), game.palyer_sprite.subsurface((2*TILESIZE, 0*TILESIZE, TILESIZE, TILESIZE)).copy()] #définition de la liste de texture de marche arrière
-        self.walkLeft = [game.palyer_sprite.subsurface((1*TILESIZE, 2*TILESIZE, TILESIZE, TILESIZE)).copy(), game.palyer_sprite.subsurface((2*TILESIZE, 2*TILESIZE, TILESIZE, TILESIZE))] #définition de la liste de texture de marche à gauche
-        self.walkRight = [game.palyer_sprite.subsurface((1*TILESIZE, 3*TILESIZE, TILESIZE, TILESIZE)).copy(), game.palyer_sprite.subsurface((2*TILESIZE, 3*TILESIZE, TILESIZE, TILESIZE)).copy()] #définition de la liste de texture de marche à droite
+        self.walkForward = [game.player_sprite.subsurface((1*TILESIZE, 1*TILESIZE, TILESIZE, TILESIZE)).copy(), game.player_sprite.subsurface((2*TILESIZE, 1*TILESIZE, TILESIZE, TILESIZE)).copy()] #définition de la liste de texture de marche avant
+        self.walkBackward = [game.player_sprite.subsurface((1*TILESIZE, 0*TILESIZE, TILESIZE, TILESIZE)).copy(), game.player_sprite.subsurface((2*TILESIZE, 0*TILESIZE, TILESIZE, TILESIZE)).copy()] #définition de la liste de texture de marche arrière
+        self.walkLeft = [game.player_sprite.subsurface((1*TILESIZE, 2*TILESIZE, TILESIZE, TILESIZE)).copy(), game.player_sprite.subsurface((2*TILESIZE, 2*TILESIZE, TILESIZE, TILESIZE))] #définition de la liste de texture de marche à gauche
+        self.walkRight = [game.player_sprite.subsurface((1*TILESIZE, 3*TILESIZE, TILESIZE, TILESIZE)).copy(), game.player_sprite.subsurface((2*TILESIZE, 3*TILESIZE, TILESIZE, TILESIZE)).copy()] #définition de la liste de texture de marche à droite
 
         self.lastWalkStatement = lws #définition de la variable lastWalkStatement par lws(valeur parametres)
         self.canMove = True #définition de la variable canMove à True

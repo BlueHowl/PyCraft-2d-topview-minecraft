@@ -5,6 +5,7 @@ Data Manager - Main interface for all data operations.
 from typing import Optional, List, Dict, Any, Tuple
 from .models import GameSave, ItemDefinition, CraftingRecipe, AudioMapping, MobDefinition
 from .repositories import SaveRepository, ConfigRepository
+from .models import PlayerState, WorldState
 
 
 class DataManager:
@@ -31,7 +32,6 @@ class DataManager:
             world_state: World data (seed, spawn, time, etc.)
             entities: Optional entity data (items, chests, furnaces, mobs)
         """
-        from .models import PlayerState, WorldState
         
         # Convert dictionaries to data models
         player = PlayerState(
@@ -166,8 +166,26 @@ class DataManager:
         return {name: mapping.file_path for name, mapping in mappings.items()}
     
     def get_texture_coordinates(self) -> Dict[str, Any]:
-        """Get texture coordinate mappings."""
-        return self.config_repository.load_texture_coordinates()
+        """Get texture coordinate mappings converted to legacy format."""
+        json_coords = self.config_repository.load_texture_coordinates()
+        
+        # Convert JSON format back to legacy array format for backward compatibility
+        legacy_coords = {}
+        for coord_id, coord_data in json_coords.items():
+            # Convert JSON object back to legacy array format:
+            # [texture_map, is_solid, texture_x, texture_y, block_type, health, drop_items, name]
+            legacy_coords[coord_id] = [
+                coord_data.get('texture_map', 0),
+                1 if coord_data.get('is_solid', False) else 0,
+                coord_data.get('texture_x', 0),
+                coord_data.get('texture_y', 0),
+                coord_data.get('block_type', 0),
+                coord_data.get('health', -1),
+                coord_data.get('drop_items', [0, 0]),
+                coord_data.get('name', '')
+            ]
+        
+        return legacy_coords
     
     def get_mob_definitions(self) -> List[Dict[str, Any]]:
         """Get mob definitions."""
@@ -194,27 +212,3 @@ class DataManager:
     def clear_cache(self):
         """Clear all cached configuration data."""
         self.config_repository.clear_cache()
-    
-    # === LEGACY COMPATIBILITY ===
-    
-    def get_legacy_level_data(self, world_name: str) -> Optional[List[str]]:
-        """
-        Get data in legacy level.save format for backward compatibility.
-        This method helps transition existing code gradually.
-        """
-        game_data = self.load_game(world_name)
-        if not game_data:
-            return None
-        
-        player = game_data['player_state']
-        world = game_data['world_state']
-        
-        # Recreate legacy format: x:y:0:health:maxHealth
-        pos_health = f"{player['position'][0]}:{player['position'][1]}:0:{player['health']}:{player['max_health']}"
-        inventory_json = str(player['inventory']).replace("'", '"')
-        seed = world['seed']
-        spawn = f"{world['spawn_point'][0]}:{world['spawn_point'][1]}"
-        global_time = str(world['global_time'])
-        night_shade = str(world['night_shade'])
-        
-        return [pos_health, inventory_json, seed, spawn, global_time, night_shade]

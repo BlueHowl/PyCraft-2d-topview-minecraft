@@ -1,0 +1,146 @@
+{
+  "item_assignments": {
+    "3": {
+      "placement_sound": "workbench_place",
+      "block_id": "1y",
+      "can_place": true
+    },
+    "29": {
+      "placement_sound": "stone_place",
+      "block_id": "117",
+      "can_place": true
+    },
+    "30": {
+      "placement_sound": "wood_place",
+      "block_id": "120",
+      "can_place": true
+    },
+    "24": {
+      "placement_sound": "wood_place",
+      "block_id": "1z",
+      "can_place": true
+    },
+    "36": {
+      "placement_sound": "wood_place",
+      "block_id": "025",
+      "can_place": true
+    },
+    "37": {
+      "placement_sound": "wool_place",
+      "block_id": "026",
+      "can_place": true
+    },
+    "38": {
+      "placement_sound": "wool_place",
+      "block_id": "127",
+      "can_place": true
+    },
+    "25": {
+      "placement_sound": "stone_place",
+      "block_id": "1s",
+      "can_place": true
+    },
+    "31": {
+      "placement_sound": "stone_place",
+      "block_id": "121",
+      "can_place": true
+    },
+    "32": {
+      "placement_sound": "stone_place",
+      "block_id": "122",
+      "can_place": true
+    },
+    "35": {
+      "placement_sound": "stone_place",
+      "block_id": "124",
+      "can_place": true
+    },
+    "12": {
+      "tool_type": 1,
+      "mining_power": 2,
+      "mining_speed": 7,
+      "durability": 3,
+      "mining_sound": "pickaxe_harvest"
+    },
+    "13": {
+      "tool_type": 1,
+      "mining_power": 3,
+      "mining_speed": 5,
+      "durability": 5,
+      "mining_sound": "pickaxe_harvest"
+    },
+    "14": {
+      "tool_type": 1,
+      "mining_power": 5,
+      "mining_speed": 3,
+      "durability": 7,
+      "mining_sound": "pickaxe_harvest"
+    },
+    "15": {
+      "tool_type": 1,
+      "mining_power": 6,
+      "mining_speed": 1,
+      "durability": 10,
+      "mining_sound": "pickaxe_harvest"
+    },
+    "16": {
+      "tool_type": 2,
+      "mining_power": 3,
+      "mining_speed": 7,
+      "durability": 3,
+      "mining_sound": "axe_harvest"
+    },
+    "17": {
+      "tool_type": 2,
+      "mining_power": 4,
+      "mining_speed": 5,
+      "durability": 5,
+      "mining_sound": "axe_harvest"
+    },
+    "18": {
+      "tool_type": 2,
+      "mining_power": 6,
+      "mining_speed": 3,
+      "durability": 7,
+      "mining_sound": "axe_harvest"
+    },
+    "19": {
+      "tool_type": 2,
+      "mining_power": 7,
+      "mining_speed": 1,
+      "durability": 10,
+      "mining_sound": "axe_harvest"
+    },
+    "20": {
+      "tool_type": 3,
+      "attack_power": 4,
+      "attack_sound": "blade_hit"
+    }
+  },
+  "furnace_fuels": {
+    "4": {
+      "burn_time": 4,
+      "fuel_value": 3
+    },
+    "11": {
+      "burn_time": 4,
+      "fuel_value": 1
+    },
+    "20": {
+      "burn_time": 4,
+      "fuel_value": 6
+    },
+    "33": {
+      "burn_time": 4,
+      "fuel_value": 10
+    },
+    "34": {
+      "burn_time": 4,
+      "fuel_value": 9
+    },
+    "35": {
+      "burn_time": 4,
+      "fuel_value": 60
+    }
+  }
+}

@@ -100,32 +100,65 @@ class ResourceManager:
             )
         self.data['item_texture_coordinate'] = item_texture_coordinate
         
-        # Load crafting recipes using legacy format to maintain compatibility
+        # Load crafting recipes from new JSON system
         craft_list = []
-        legacy_craft_file = path.join(self.game_folder, 'data', 'craft.list')
-        if path.exists(legacy_craft_file):
-            with open(legacy_craft_file, 'rt') as f:
-                for line in f:
-                    if line.strip():
-                        l = line.strip().split('|')
-                        craft_list.append(l)
-        else:
-            # Try loading from new format and convert back
-            recipes = self.data_manager.get_crafting_recipes()
-            for recipe in recipes:
-                # Convert back to legacy format for compatibility
-                result_id = str(recipe['result_item_id']).zfill(2)
+        recipes = self.data_manager.get_crafting_recipes()
+        for recipe in recipes:
+            result_id = recipe['result_item_id']
+            
+            if recipe['requires_workbench']:
+                # Workbench recipe format: "10|ingredients;result_id,quantity"
                 ingredients_str = ""
                 if recipe['ingredients']:
                     ingredient_parts = []
                     for item_id, quantity in recipe['ingredients']:
                         ingredient_parts.append(f"{item_id},{quantity}")
-                    ingredients_str = ";".join(ingredient_parts)
+                    ingredients_str = ":".join(ingredient_parts)
                 
-                if recipe['requires_workbench']:
-                    result_id = "10"  # Legacy workbench indicator
+                result_part = f"{result_id},{recipe['result_quantity']}"
+                full_ingredients = f"{ingredients_str};{result_part}"
+                craft_list.append(["10", full_ingredients])
+            else:
+                # Regular recipe format: determine category based on result item
+                if result_id == 1:  # bow
+                    category = "01"
+                elif result_id == 2:  # arrow
+                    category = "02"
+                elif result_id == 3:  # workbench - goes to category 03
+                    category = "03"
+                elif result_id == 9:  # bandage
+                    category = "09"
+                elif result_id in [5, 6]:  # health items (medkit, syringe) - use category 13 with special format
+                    category = "13"
+                elif result_id in [11, 29, 30, 31, 32, 35, 36, 37, 38]:  # items category (sticks, furnace, chest, blocks, torches, etc.)
+                    category = "11"
+                else:
+                    # Default to result_id padded with zeros
+                    category = str(result_id).zfill(2)
                 
-                craft_list.append([result_id, ingredients_str])
+                # For non-workbench recipes, format depends on category
+                if category in ["11", "13"]:
+                    # Categories 11 and 13 use the special format: ingredients;result,quantity
+                    ingredients_str = ""
+                    if recipe['ingredients']:
+                        ingredient_parts = []
+                        for item_id, quantity in recipe['ingredients']:
+                            ingredient_parts.append(f"{item_id},{quantity}")
+                        ingredients_str = ":".join(ingredient_parts)
+                    
+                    result_part = f"{result_id},{recipe['result_quantity']}"
+                    full_ingredients = f"{ingredients_str};{result_part}"
+                    craft_list.append([category, full_ingredients])
+                else:
+                    # Standard format: category|ingredients
+                    ingredients_str = ""
+                    if recipe['ingredients']:
+                        ingredient_parts = []
+                        for item_id, quantity in recipe['ingredients']:
+                            ingredient_parts.append(f"{item_id},{quantity}")
+                        ingredients_str = ";".join(ingredient_parts)
+                    
+                    craft_list.append([category, ingredients_str])
         
         self.data['craft_list'] = craft_list
         
@@ -170,32 +203,44 @@ class ResourceManager:
                         map_data.append(line.strip())
             self.data[f'{map_name}_map'] = map_data
         
-        # Load remaining legacy files that need separate migration
-        self._load_legacy_assignment_and_fuel_data(data_path)
+        # Load item configuration from new JSON system
+        self._load_item_config(data_path)
     
-    def _load_legacy_assignment_and_fuel_data(self, data_path):
-        """Load legacy assignment and fuel data (temporary until migrated)."""
-        # Load item assignment list
-        item_assignment_list = {}
-        assignment_file = path.join(data_path, 'item_assignement.list')
-        if path.exists(assignment_file):
-            with open(assignment_file, 'rt') as f:
-                for line in f:
-                    l = line.strip().split(':')
-                    if len(l) > 1:
-                        item_assignment_list[int(l[0])] = l[1:]
-        self.data['item_assignment_list'] = item_assignment_list
+    def _load_item_config(self, data_path):
+        """Load item configuration from JSON system."""
+        from ..data.repositories.config_repository import ConfigRepository
         
-        # Load furnace fuel list
-        furnace_fuel_list = {}
-        fuel_file = path.join(data_path, 'furnace_fuels.list')
-        if path.exists(fuel_file):
-            with open(fuel_file, 'rt') as f:
-                for line in f:
-                    l = line.strip().split(':')
-                    if len(l) > 1:
-                        furnace_fuel_list[int(l[0])] = l[1:]
-        self.data['furnace_fuel_list'] = furnace_fuel_list
+        config_repo = ConfigRepository(self.game_folder)
+        item_config = config_repo.load_item_config()
+        
+        # Convert to legacy format for backward compatibility during transition
+        self.data['item_assignment_list'] = {}
+        for item_id, assignment in item_config.get('item_assignments', {}).items():
+            # Convert new format to legacy format for existing code
+            if 'can_place' in assignment:
+                # Placement item: [0, block_id, placement_sound]
+                self.data['item_assignment_list'][int(item_id)] = [
+                    '0', 
+                    assignment.get('block_id', ''),
+                    assignment.get('placement_sound', '')
+                ]
+            elif 'tool_type' in assignment:
+                # Tool item: [tool_type, mining_power, mining_speed, durability, mining_sound]
+                self.data['item_assignment_list'][int(item_id)] = [
+                    str(assignment.get('tool_type', 1)),
+                    str(assignment.get('mining_power', 1)),
+                    str(assignment.get('mining_speed', 1)),
+                    str(assignment.get('durability', 1)),
+                    assignment.get('mining_sound', 'pickaxe_harvest')
+                ]
+        
+        self.data['furnace_fuel_list'] = {}
+        for item_id, fuel in item_config.get('furnace_fuels', {}).items():
+            # Convert to legacy format: [burn_time, fuel_value]
+            self.data['furnace_fuel_list'][int(item_id)] = [
+                str(fuel.get('burn_time', 4)),
+                str(fuel.get('fuel_value', 1))
+            ]
     
     def get_font(self, size_name):
         """Get a font by size name."""

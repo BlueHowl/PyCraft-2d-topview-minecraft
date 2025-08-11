@@ -34,7 +34,7 @@ class Mob(pg.sprite.Sprite):
         self.stopDistance = game.mobList[mobId][4]
         self.path = []
         self.image = pg.Surface((TILESIZE, TILESIZE), pg.SRCALPHA, 32)
-        #self.image.blit(game.palyer_sprite.subsurface((1*TILESIZE, 0*TILESIZE, TILESIZE, TILESIZE)), (0, 0))
+        #self.image.blit(game.player_sprite.subsurface((1*TILESIZE, 0*TILESIZE, TILESIZE, TILESIZE)), (0, 0))
         self.rect = self.image.get_rect()
         self.vel = vec(0, 0)
         self.pos = vec(x * TILESIZE, y * TILESIZE) #* TILESIZE

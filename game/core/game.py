@@ -206,7 +206,7 @@ class Game:
         return self.images['tile_images']
     
     @property
-    def palyer_sprite(self):  # Keep the typo for compatibility
+    def player_sprite(self):  # Keep the typo for compatibility
         return self.images['player_sprite']
     
     @property

@@ -1,6 +1,0 @@
-bird|textures/mobs/bird.png|8,4|0|0|0|10
-chicken|textures/mobs/chicken.png|8,3|0|0|0|15
-sheep|textures/mobs/sheep.png|7,4|0|0|0|20
-ghost|textures/mobs/ghost.png|0,0|1|2|2|30
-zombie|textures/mobs/zombie.png|0,0|1|2|2|25
-skeleton|textures/mobs/skeleton.png|2,3|1|1|9|30

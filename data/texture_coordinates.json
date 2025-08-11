@@ -1,0 +1,644 @@
+{
+  "texture_coordinates": {
+    "00": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 1,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "water"
+    },
+    "01": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 0,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "grass"
+    },
+    "02": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 0,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "solid_grass"
+    },
+    "03": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 4,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "stairLeft"
+    },
+    "04": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 5,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "stairTop"
+    },
+    "05": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 6,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "stairRight"
+    },
+    "06": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 7,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "stairBottom"
+    },
+    "07": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 2,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "dirt"
+    },
+    "08": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 5,
+      "texture_y": 0,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "wood_path_horizontal"
+    },
+    "09": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 6,
+      "texture_y": 0,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "wood_path_vertical"
+    },
+    "0a": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 5,
+      "texture_y": 1,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "wood_path_+"
+    },
+    "0b": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 8,
+      "texture_y": 1,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "wood_path_T"
+    },
+    "01a": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 6,
+      "texture_y": 3,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "water"
+    },
+    "02a": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 5,
+      "texture_y": 4,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "water"
+    },
+    "03a": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 6,
+      "texture_y": 5,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "water"
+    },
+    "04a": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 7,
+      "texture_y": 4,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "water"
+    },
+    "05a": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 5,
+      "texture_y": 3,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "water"
+    },
+    "06a": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 7,
+      "texture_y": 3,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "water"
+    },
+    "07a": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 5,
+      "texture_y": 5,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "water"
+    },
+    "08a": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 7,
+      "texture_y": 5,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "water"
+    },
+    "09a": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 8,
+      "texture_y": 3,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "water"
+    },
+    "00a": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 9,
+      "texture_y": 3,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "water"
+    },
+    "00b": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 8,
+      "texture_y": 4,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "water"
+    },
+    "0c": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 9,
+      "texture_y": 4,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "water"
+    },
+    "1d": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 0,
+      "texture_y": 1,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "tree_bottom"
+    },
+    "1e": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 1,
+      "texture_y": 0,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "tree_middle"
+    },
+    "1f": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 0,
+      "texture_y": 0,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "tree_top"
+    },
+    "1g": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 15,
+      "texture_y": 4,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "grass_wall_left"
+    },
+    "1h": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 17,
+      "texture_y": 4,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "grass_wall_right"
+    },
+    "1i": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 16,
+      "texture_y": 3,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "grass_wall_top"
+    },
+    "1j": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 16,
+      "texture_y": 5,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "grass_wall_bottom"
+    },
+    "1k": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 18,
+      "texture_y": 3,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "wall_grass_topleft"
+    },
+    "1l": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 19,
+      "texture_y": 3,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "wall_grass_topright"
+    },
+    "1m": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 18,
+      "texture_y": 4,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "wall_grass_bottomleft"
+    },
+    "1n": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 19,
+      "texture_y": 4,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "wall_grass_bottomright"
+    },
+    "1o": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 2,
+      "texture_y": 0,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "sign"
+    },
+    "1p": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 2,
+      "texture_y": 1,
+      "block_type": 2,
+      "health": 39,
+      "drop_items": [0, 0],
+      "name": "rock"
+    },
+    "1q": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 4,
+      "texture_y": 0,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "horizontal_log"
+    },
+    "1r": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 4,
+      "texture_y": 1,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "vertical_log"
+    },
+    "1s": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 3,
+      "texture_y": 2,
+      "block_type": 2,
+      "health": 30,
+      "drop_items": [25, 1],
+      "name": "stone_block"
+    },
+    "1t": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 7,
+      "texture_y": 0,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "wood_path_stake"
+    },
+    "1u": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 6,
+      "texture_y": 1,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "wood_path_right"
+    },
+    "1v": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 8,
+      "texture_y": 0,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "wood_path_top"
+    },
+    "1w": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 7,
+      "texture_y": 1,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "wood_path_left"
+    },
+    "1x": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 8,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "wood_cutted"
+    },
+    "1y": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 9,
+      "texture_y": 0,
+      "block_type": 1,
+      "health": 25,
+      "drop_items": [3, 1],
+      "name": "workbench"
+    },
+    "1z": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 5,
+      "texture_y": 1,
+      "block_type": 1,
+      "health": 20,
+      "drop_items": [24, 1],
+      "name": "wood_block"
+    },
+    "111": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 1,
+      "texture_y": 1,
+      "block_type": 1,
+      "health": 20,
+      "drop_items": [0, 0],
+      "name": "bush"
+    },
+    "117": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 9,
+      "texture_y": 1,
+      "block_type": 2,
+      "health": 35,
+      "drop_items": [29, 1],
+      "name": "furnace"
+    },
+    "118": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 9,
+      "texture_y": 2,
+      "block_type": 2,
+      "health": 40,
+      "drop_items": [26, 2],
+      "name": "iron_ore_block"
+    },
+    "119": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 10,
+      "texture_y": 2,
+      "block_type": 3,
+      "health": 50,
+      "drop_items": [28, 1],
+      "name": "diamond_ore_block"
+    },
+    "120": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 10,
+      "texture_y": 0,
+      "block_type": 1,
+      "health": 25,
+      "drop_items": [30, 1],
+      "name": "chest"
+    },
+    "121": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 11,
+      "texture_y": 2,
+      "block_type": 2,
+      "health": 45,
+      "drop_items": [31, 1],
+      "name": "iron_block"
+    },
+    "122": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 12,
+      "texture_y": 2,
+      "block_type": 3,
+      "health": 55,
+      "drop_items": [32, 1],
+      "name": "diamond_block"
+    },
+    "123": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 13,
+      "texture_y": 2,
+      "block_type": 2,
+      "health": 35,
+      "drop_items": [33, 3],
+      "name": "coal_ore_block"
+    },
+    "124": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 14,
+      "texture_y": 2,
+      "block_type": 2,
+      "health": 40,
+      "drop_items": [35, 1],
+      "name": "coal_block"
+    },
+    "025": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 11,
+      "texture_y": 0,
+      "block_type": 1,
+      "health": 5,
+      "drop_items": [36, 1],
+      "name": "torch_block"
+    },
+    "026": {
+      "texture_map": 0,
+      "is_solid": false,
+      "texture_x": 10,
+      "texture_y": 1,
+      "block_type": 1,
+      "health": 15,
+      "drop_items": [37, 1],
+      "name": "sleeping_bag"
+    },
+    "127": {
+      "texture_map": 0,
+      "is_solid": true,
+      "texture_x": 11,
+      "texture_y": 1,
+      "block_type": 1,
+      "health": 20,
+      "drop_items": [38, 1],
+      "name": "wool_block"
+    },
+    "012": {
+      "texture_map": 1,
+      "is_solid": true,
+      "texture_x": 1,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "ice"
+    },
+    "013": {
+      "texture_map": 1,
+      "is_solid": true,
+      "texture_x": 0,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "icy_grass"
+    },
+    "114": {
+      "texture_map": 1,
+      "is_solid": false,
+      "texture_x": 1,
+      "texture_y": 1,
+      "block_type": 1,
+      "health": 20,
+      "drop_items": [0, 0],
+      "name": "icy_bush"
+    },
+    "015": {
+      "texture_map": 1,
+      "is_solid": true,
+      "texture_x": 2,
+      "texture_y": 2,
+      "block_type": 0,
+      "health": -1,
+      "drop_items": [0, 0],
+      "name": "icy_dirt"
+    },
+    "116": {
+      "texture_map": 1,
+      "is_solid": false,
+      "texture_x": 2,
+      "texture_y": 1,
+      "block_type": 2,
+      "health": 39,
+      "drop_items": [0, 0],
+      "name": "icy_rock"
+    }
+  }
+}
