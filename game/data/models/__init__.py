@@ -193,10 +193,10 @@ class MobDefinition:
     name: str
     sprite_path: str
     spawn_item: Tuple[int, int]  # (item_id, quantity)
+    is_enemy: int  # 0 for friendly, 1 for hostile
     health: int
     damage: int
     speed: int
-    ai_type: int
     
     @classmethod
     def from_legacy_data(cls, mob_data: Tuple) -> 'MobDefinition':
@@ -205,8 +205,8 @@ class MobDefinition:
             name=mob_data[6],
             sprite_path="",  # sprite is loaded differently in legacy
             spawn_item=mob_data[1],
-            health=mob_data[2],
+            is_enemy=mob_data[2],
+            health=mob_data[5],
             damage=mob_data[3],
-            speed=mob_data[4],
-            ai_type=mob_data[5]
+            speed=mob_data[4]
         )

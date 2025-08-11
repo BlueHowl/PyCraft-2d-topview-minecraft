@@ -45,7 +45,7 @@ class GameStateManager:
     def sleep(self):
         """Handle player sleeping."""
         if self.game.isNight:
-            self.game.player.pos = self.game.spawnPoint  # spawnPoint is already in pixel coordinates
+            self.game.player.pos = vec(self.game.spawnPoint.x, self.game.spawnPoint.y)  # Create a COPY, don't share the same object!
             self.skip_night()
             self.game.player.health = self.game.player.lifebar.maxHealth
             self.game.player.lifebar.updateHealth(self.game.player.health)

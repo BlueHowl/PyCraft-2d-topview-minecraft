@@ -140,14 +140,18 @@ class ResourceManager:
             if mob['sprite_path']:  # Only if sprite path exists
                 try:
                     sprite = pg.image.load(path.join(self.game_folder, mob['sprite_path'])).convert_alpha()
+                    # Fix mob tuple structure to match expected legacy format:
+                    # [0]: sprite, [1]: spawn_item, [2]: isEnemy, [3]: damage, [4]: speed, [5]: health, [6]: name
+                    # Use the corrected field names from JSON
+                    is_enemy = mob.get('is_enemy', 1 if mob['damage'] > 0 else 0)
                     mob_tuple = (
                         sprite,
                         mob['spawn_item'],
-                        mob['health'],
-                        mob['damage'],
-                        mob['speed'],
-                        mob['ai_type'],
-                        mob['name']
+                        is_enemy,           # Index 2: isEnemy (0 for friendly, 1 for hostile)
+                        mob['damage'],      # Index 3: Attacktype/damage
+                        mob['speed'],       # Index 4: stopDistance/speed
+                        mob['health'],      # Index 5: health
+                        mob['name']         # Index 6: name
                     )
                     mob_list.append(mob_tuple)
                 except Exception as e:

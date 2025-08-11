@@ -177,10 +177,10 @@ class DataManager:
                 'name': mob.name,
                 'sprite_path': mob.sprite_path,
                 'spawn_item': mob.spawn_item,
+                'is_enemy': mob.is_enemy,
                 'health': mob.health,
                 'damage': mob.damage,
-                'speed': mob.speed,
-                'ai_type': mob.ai_type
+                'speed': mob.speed
             }
             for mob in mobs
         ]

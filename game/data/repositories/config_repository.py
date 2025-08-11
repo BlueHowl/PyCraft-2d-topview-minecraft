@@ -246,19 +246,19 @@ class ConfigRepository:
                                 sprite_path = parts[1]
                                 spawn_item_parts = parts[2].split(',')
                                 spawn_item = (int(spawn_item_parts[0]), int(spawn_item_parts[1]))
-                                health = int(parts[3])
-                                damage = int(parts[4])
-                                speed = int(parts[5])
-                                ai_type = int(parts[6])
+                                is_enemy = int(parts[3])  # Index 3: isEnemy
+                                damage = int(parts[4])    # Index 4: damage
+                                speed = int(parts[5])     # Index 5: speed
+                                health = int(parts[6])    # Index 6: health
                                 
                                 mob = MobDefinition(
                                     name=name,
                                     sprite_path=sprite_path,
                                     spawn_item=spawn_item,
+                                    is_enemy=is_enemy,
                                     health=health,
                                     damage=damage,
-                                    speed=speed,
-                                    ai_type=ai_type
+                                    speed=speed
                                 )
                                 mobs.append(mob)
                 
@@ -279,10 +279,10 @@ class ConfigRepository:
                     'name': mob.name,
                     'sprite_path': mob.sprite_path,
                     'spawn_item': mob.spawn_item,
+                    'is_enemy': mob.is_enemy,
                     'health': mob.health,
                     'damage': mob.damage,
-                    'speed': mob.speed,
-                    'ai_type': mob.ai_type
+                    'speed': mob.speed
                 }
                 for mob in mobs
             ]

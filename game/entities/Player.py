@@ -288,7 +288,8 @@ class Player(pg.sprite.Sprite): #classe du joueur
                                     elif itemAssign[1] == '117':
                                         self.game.map.furnacesData[name] = [[[0, 0]] * 3, 0, 0, 0]
                                     elif itemAssign[1] == '026':
-                                        self.game.spawnPoint = target // 32
+                                        # Sleeping bag placed - spawn point will be set when player sleeps in it
+                                        pass
 
                                     self.game.changeTile(target, itemAssign[1], False)
 
@@ -401,8 +402,8 @@ class Player(pg.sprite.Sprite): #classe du joueur
         for i, item in enumerate(self.hotbar.itemList):
             if item[0] != 0 and item[1] != 0:
                 FloatingItem(self.game, self.pos.x - 16 - uniform(-24, 24), self.pos.y - 16 - uniform(-24, 24), item)
-
             self.hotbar.itemList[i] = [0, 0]
+        
         self.hotbar.updateSelector(0)
 
         self.game.save()
@@ -412,7 +413,8 @@ class Player(pg.sprite.Sprite): #classe du joueur
         self.game.isGamePaused = False
         pg.mouse.set_visible(False)
 
-        self.pos = self.game.spawnPoint * TILESIZE
+        # spawnPoint is already in pixel coordinates, use directly
+        self.pos = vec(self.game.spawnPoint.x, self.game.spawnPoint.y)  # Create a COPY, don't share the same object!
 
         self.health = self.lifebar.maxHealth
         self.lifebar.updateHealth(self.health)

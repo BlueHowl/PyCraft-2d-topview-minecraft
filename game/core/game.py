@@ -145,6 +145,17 @@ class Game:
     @property
     def font_10(self):
         return self.fonts['font_10']
+    
+    # Spawn point property
+    @property
+    def spawnPoint(self):
+        """Get the current spawn point."""
+        return getattr(self, '_spawnPoint', vec(0, 0))
+    
+    @spawnPoint.setter
+    def spawnPoint(self, value):
+        """Set spawn point."""
+        self._spawnPoint = value
         
     @property
     def mobList(self):

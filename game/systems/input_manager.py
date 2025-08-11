@@ -6,6 +6,8 @@ import math
 from random import uniform
 from game.config.settings import *
 
+vec = pg.math.Vector2
+
 
 class InputManager:
     """Manages all input events and user interactions."""
@@ -192,7 +194,12 @@ class InputManager:
                     elif tile == '120':  # Chest
                         self._open_chest(x + dx, y + dy)
                     elif tile == '026':  # Bed
+                        # Set spawn point to the sleeping bag location before sleeping
+                        sleeping_bag_pos = vec((x + dx) * TILESIZE, (y + dy) * TILESIZE)
+                        self.game.spawnPoint = sleeping_bag_pos
                         self.game.sleep()
+                        # Mark that player state has changed so it gets saved
+                        self.game.hasPlayerStateChanged = True
                 break
     
     def _interact_with_sign(self, x, y):
@@ -346,7 +353,8 @@ class InputManager:
     def _cmd_spawnpoint(self, command):
         """Set spawn point command."""
         if command[1].isdigit() and command[2].isdigit():
-            self.game.spawnPoint = vec(int(command[1]), int(command[2]))
+            # Convert tile coordinates to pixel coordinates
+            self.game.spawnPoint = vec(int(command[1]) * TILESIZE, int(command[2]) * TILESIZE)
     
     def _cmd_time(self, command):
         """Time manipulation command."""
