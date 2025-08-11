@@ -1,6 +1,6 @@
 from perlin_noise import PerlinNoise
 from random import *
-from settings import *
+from game.config.settings import *
 
 #chunk_manager code from https://www.reddit.com/r/pygame/comments/h8cfl3/infinite_world_generation_algorithm/
 #modified

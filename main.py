@@ -1,13 +1,21 @@
+import math
 import pygame as pg
 import sys
 import threading
 import json
 from os import path
 from random import *
-#from settings import *
-from sprites import *
-from tilemap import *
-from chunk_manager import *
+from game.entities.FloatingItem import FloatingItem
+from game.entities.mobs.Mob import Mob
+from game.entities.Player import Player
+from game.systems.Camera import Camera
+from game.systems.chunk_manager import *
+from game.ui.InputBox import InputBox
+from game.ui.Menu import Menu
+from game.ui.TextObject import TextObject
+from game.world.Ground import Ground
+from game.world.Map import Map
+from game.world.Layer1_Objs import Layer1_objs
 
 
 class Game:  # classe principale Game
@@ -88,7 +96,7 @@ class Game:  # classe principale Game
     def load_data(self):
         # définition du chemin d'acces
         self.game_folder = path.dirname(__file__)
-
+        print("Game folder:", self.game_folder)
         # try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         # self.game_folder = sys._MEIPASS
@@ -224,7 +232,7 @@ class Game:  # classe principale Game
 
     def new(self):
         pg.mouse.set_visible(False)  # rend la souris invisible
-
+        
         # création d'une nouvelle instance de la classe Map
         self.map = Map(path.join(self.game_folder, 'saves/' + self.worldName))
 
@@ -1095,7 +1103,7 @@ class Game:  # classe principale Game
                 self.input_commands_txt.handle_event(event)
 
     def show_start_screen(self):
-        m = Menu(self, 0, 0)
+        m = Menu(self, 0, 0, self.game_folder)
 
         while not self.playing:
             # event
