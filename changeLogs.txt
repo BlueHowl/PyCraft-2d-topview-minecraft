@@ -211,3 +211,10 @@ added torches avoid hostile mob spawn
 fps optimization torch light blend
 added respawn title and dead
 added more commands
+
+-----
+
+11/08/2025:
+fixed mob pathfinding library changes
+changed command prefix to "/" instead of ":"
+refactored project structure
