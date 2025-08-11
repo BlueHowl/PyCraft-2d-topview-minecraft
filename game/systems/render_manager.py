@@ -85,28 +85,28 @@ class RenderManager:
         for sprite in self.game.floatingItems:
             self.game.screen.blit(sprite.image, self.game.camera.apply(sprite))
             if GameConfig.SHOW_HITBOXES or self.game.hitboxDebug:
-                pg.draw.rect(self.game.screen, WHITE, self.game.camera.apply(sprite), 1)
+                pg.draw.rect(self.game.screen, GREEN, self.game.camera.apply(sprite), 1)
     
     def _draw_players(self):
         """Draw player sprites."""
         for sprite in self.game.players:
             self.game.screen.blit(sprite.image, self.game.camera.apply(sprite))
             if GameConfig.SHOW_HITBOXES or self.game.hitboxDebug:
-                pg.draw.rect(self.game.screen, WHITE, self.game.camera.apply(sprite), 1)
+                pg.draw.rect(self.game.screen, GREEN, self.game.camera.apply(sprite), 1)
     
     def _draw_mobs(self):
         """Draw mob sprites."""
         for sprite in self.game.mobs:
             self.game.screen.blit(sprite.image, self.game.camera.apply(sprite))
             if GameConfig.SHOW_HITBOXES or self.game.hitboxDebug:
-                pg.draw.rect(self.game.screen, WHITE, self.game.camera.apply(sprite), 1)
+                pg.draw.rect(self.game.screen, GREEN, self.game.camera.apply(sprite), 1)
     
     def _draw_projectiles(self):
         """Draw projectile sprites."""
         for sprite in self.game.projectiles:
             self.game.screen.blit(sprite.image, self.game.camera.apply(sprite))
             if GameConfig.SHOW_HITBOXES or self.game.hitboxDebug:
-                pg.draw.rect(self.game.screen, WHITE, self.game.camera.apply(sprite), 1)
+                pg.draw.rect(self.game.screen, GREEN, self.game.camera.apply(sprite), 1)
     
     def _draw_crosshair(self):
         """Draw the crosshair cursor."""
