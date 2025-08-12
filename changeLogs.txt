@@ -218,3 +218,7 @@ added more commands
 fixed mob pathfinding library changes
 changed command prefix to "/" instead of ":"
 refactored project structure and separated I/O logic
+
+12/08/2025:
+refactored save and data file formats
+added unit tests

@@ -28,7 +28,7 @@ WORKDIR /app
 COPY . .
 
 # Build with pyinstaller
-RUN pyinstaller -y --onefile --windowed main.py \
+RUN pyinstaller -y --windowed main.py \
   --add-data="textures:textures" \
   --add-data="audio:audio" \
   --add-data="data:data" \
