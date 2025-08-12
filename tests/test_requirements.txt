@@ -1,0 +1,27 @@
+# Test requirements for PyCraft 2D game
+# Install with: pip install -r test_requirements.txt
+
+# Core testing framework (usually included with Python)
+# unittest - part of standard library
+
+# Optional but recommended for enhanced testing
+coverage>=7.0.0       # Test coverage reporting
+pytest>=7.0.0         # Alternative test runner with more features
+pytest-cov>=4.0.0     # Coverage plugin for pytest
+parameterized>=0.8.1  # Parameterized test cases
+
+# Mock and testing utilities
+mock>=4.0.0          # Enhanced mocking (part of unittest.mock in Python 3.3+)
+
+# Performance testing
+pytest-benchmark>=4.0.0  # Performance benchmarking for tests
+
+# Test reporting
+pytest-html>=3.0.0      # HTML test reports
+pytest-xdist>=3.0.0     # Parallel test execution
+
+# Game-specific testing dependencies
+pygame>=2.1.0         # Required for game testing (should already be installed)
+
+# Documentation testing
+doctest               # Part of standard library - for testing docstrings
