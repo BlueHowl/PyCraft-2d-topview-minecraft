@@ -3,7 +3,7 @@ Game Configuration - Centralized configuration management
 """
 import os
 from typing import Dict, Any
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 
 class GameConfig:
@@ -11,9 +11,9 @@ class GameConfig:
     
     # Debug and Development
     # Load environment variables from .env file
-    load_dotenv()
+    # load_dotenv()
 
-    DEBUG_MODE = os.getenv('PYCRAFT_DEBUG', 'False').lower() == 'true'
+    DEBUG_MODE = False #os.getenv('PYCRAFT_DEBUG', 'False').lower() == 'true'
     SHOW_FPS = DEBUG_MODE
     SHOW_HITBOXES = DEBUG_MODE  # Show hitboxes in debug mode
     ENABLE_CONSOLE = DEBUG_MODE

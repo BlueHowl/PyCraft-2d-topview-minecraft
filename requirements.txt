@@ -2,4 +2,3 @@ pygame
 pathfinding
 perlin-noise
 pyinstaller
-dotenv
