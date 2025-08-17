@@ -93,6 +93,10 @@ class Hotbar(pg.sprite.Sprite):
         self.game.hasPlayerStateChanged = True #autorise la sauvegarde du joueur
 
     def getCurrentSelectedItem(self):
+        # Check if itemList is empty or index is out of range
+        if not self.itemList or self.index >= len(self.itemList):
+            return [0, 0, 0, 0, 'none']
+            
         itemInfos = self.game.itemTextureCoordinate.get(self.itemList[self.index][0])
         if itemInfos != None:
             return itemInfos

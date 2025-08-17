@@ -26,7 +26,7 @@ class Player(pg.sprite.Sprite): #classe du joueur
         self.pos = vec(x, y) #assignation de la variable pos(position) par un vecteur 2d au positions
 
         self.tilepos = vec(int(self.pos.x / TILESIZE), int(self.pos.y / TILESIZE))
-        self.chunkpos = self.tilepos * CHUNKSIZE
+        self.chunkpos = vec(int(self.tilepos.x / CHUNKSIZE), int(self.tilepos.y / CHUNKSIZE))
 
         # Parse health from the correct position in legacy format: x:y:0:health:maxhealth
         pos_data = self.game.map.levelSavedData[0].split(':')
@@ -66,8 +66,20 @@ class Player(pg.sprite.Sprite): #classe du joueur
 
         self.lifebar = Lifebar(game, 10, 10, self.health)
 
-        #items = [[1, 1], [19, 1], [2, STACK], [0, 0], [9, 4],[4, 8], [14, 1], [11, 8], [3, 10]]
-        items = json.loads(self.game.map.levelSavedData[1])
+        # Load items from saved data, with fallback for multiplayer/empty saves
+        try:
+            items = json.loads(self.game.map.levelSavedData[1])
+            # Ensure items list has 9 slots for hotbar
+            if not items or len(items) == 0:
+                items = [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+            elif len(items) < 9:
+                # Pad with empty slots
+                while len(items) < 9:
+                    items.append([0, 0])
+        except (json.JSONDecodeError, IndexError, TypeError):
+            # Fallback to default empty hotbar for multiplayer or corrupted data
+            items = [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+            
         self.hotbar = Hotbar(game, (WIDTH - 9*32) // 2, HEIGHT-32, game.hotbar_img.subsurface((0*TILESIZE, 0*TILESIZE, 9*TILESIZE, TILESIZE)).copy(), game.hotbar_img.subsurface((0*TILESIZE, 1*TILESIZE, 9*TILESIZE, TILESIZE)).copy(), 0, items)
 
         self.inventory = Inventory(game, 32, 32)
@@ -124,6 +136,9 @@ class Player(pg.sprite.Sprite): #classe du joueur
             self.last_blocked = self.game.now
 
     def update(self):
+        # Store previous position for network updates
+        prev_pos = (self.pos.x, self.pos.y) if hasattr(self, 'pos') else (0, 0)
+        
         if self.canMove: #si canMove == true
             self.get_keys() #appel la fonction get_keys
         self.pos += self.vel * self.game.dt #application de la vélocité
@@ -132,10 +147,28 @@ class Player(pg.sprite.Sprite): #classe du joueur
         self.collide_with_walls('x') #appel de la fonction collide_with_walls param 'x'
         self.rect.y = self.pos.y #application de la position y
         self.collide_with_walls('y') #appel de la fonction collide_with_walls param 'y'
-        self.tilepos = vec(int(self.pos.x / TILESIZE), int(self.pos.y / TILESIZE))
-        self.chunkpos = vec(int(self.tilepos.x / CHUNKSIZE), int(self.tilepos.y / CHUNKSIZE))
+        self.tilepos = vec(int(self.pos.x // TILESIZE), int(self.pos.y // TILESIZE))
+        # Use math.floor for proper negative coordinate handling
+        import math
+        self.chunkpos = vec(int(math.floor(self.tilepos.x / CHUNKSIZE)), int(math.floor(self.tilepos.y / CHUNKSIZE)))
         #self.regen()
         self.gatherItem()
+        
+        # Send position update to server if multiplayer and position changed
+        if (hasattr(self.game, 'game_mode') and self.game.game_mode == "multiplayer_client" and
+            hasattr(self.game, 'network_manager') and self.game.network_manager and
+            self.game.network_manager.connected):
+            
+            current_pos = (self.pos.x, self.pos.y)
+            # Only send update if position changed significantly (reduce network traffic)
+            if (abs(current_pos[0] - prev_pos[0]) > 1 or abs(current_pos[1] - prev_pos[1]) > 1):
+                from game.network.message_types import MessageType
+                self.game.network_manager.send_message(MessageType.PLAYER_STATE_SYNC, {
+                    'x': self.pos.x,
+                    'y': self.pos.y,
+                    'health': self.health,
+                    'facing_direction': 'left' if self.vel.x < 0 else 'right'
+                })
 
     def regen(self):
         if self.game.now > self.last_hit + 3500:

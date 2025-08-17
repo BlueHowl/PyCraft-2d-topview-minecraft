@@ -19,7 +19,7 @@ class GameConfig:
     ENABLE_CONSOLE = DEBUG_MODE
     
     # Performance Settings
-    MAX_CHUNK_CACHE_SIZE = 200 if os.getenv('PYCRAFT_DEBUG', 'False').lower() == 'true' else 50
+    MAX_CHUNK_CACHE_SIZE = 200 if DEBUG_MODE else 50
     AUTO_SAVE_INTERVAL = 20 * 1000  # milliseconds
     CHUNK_UNLOAD_DISTANCE = 8  # Chunks beyond this distance get unloaded
     CHUNK_CLEANUP_INTERVAL = 60 * 1000  # Chunk cleanup every 60 seconds (1 minute)

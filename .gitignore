@@ -5,5 +5,5 @@ dist/
 main.spec
 exports
 saves/*
-game.log
+game.log*
 .env

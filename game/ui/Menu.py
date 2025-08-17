@@ -84,21 +84,30 @@ class Menu(pg.sprite.Sprite):
             self.inputBoxes = []
 
             if page == 0:
-                txt = self.game.font_32.render('New Game', True, BLACK)
+                txt = self.game.font_32.render('Singleplayer', True, BLACK)
                 x = (WIDTH / 2) - (txt.get_width() / 2)
-                self.image.blit(txt, (x, 200))
-                self.UiList.append((x, 200, txt.get_width(), txt.get_height(), 1))
+                self.image.blit(txt, (x, 180))
+                self.UiList.append((x, 180, txt.get_width(), txt.get_height(), 1))
+
+                txt = self.game.font_32.render('Multiplayer', True, BLACK)
+                x = (WIDTH / 2) - (txt.get_width() / 2)
+                self.image.blit(txt, (x, 230))
+                self.UiList.append((x, 230, txt.get_width(), txt.get_height(), 5))
 
                 txt = self.game.font_32.render('Load Game', True, BLACK)
                 x = (WIDTH / 2) - (txt.get_width() / 2)
-                self.image.blit(txt, (x, 250))
-                self.UiList.append((x, 250, txt.get_width(), txt.get_height(), 2))
+                self.image.blit(txt, (x, 280))
+                self.UiList.append((x, 280, txt.get_width(), txt.get_height(), 2))
 
                 txt = self.game.font_32.render('Settings', True, BLACK)
                 x = (WIDTH / 2) - (txt.get_width() / 2)
-                self.image.blit(txt, (x, 300))
-                self.UiList.append((x, 300, txt.get_width(), txt.get_height(), 3))
+                self.image.blit(txt, (x, 330))
+                self.UiList.append((x, 330, txt.get_width(), txt.get_height(), 3))
             elif page == 1:
+                txt = self.game.font_32.render('Create Singleplayer World', True, BLACK)
+                x = (WIDTH / 2) - (txt.get_width() / 2)
+                self.image.blit(txt, (x, 120))
+                
                 txt = self.game.font_32.render('World Name', True, BLACK)
                 x = (WIDTH / 2) - (txt.get_width() / 2)
                 self.image.blit(txt, (x, 200))
@@ -185,9 +194,14 @@ class Menu(pg.sprite.Sprite):
                     if success:
                         self.game.worldName = self.world_name
                         self.game.playing = True
+                        self.game.game_mode = "singleplayer"  # Set singleplayer mode
                         self.kill()
                     else:
                         print(f"Failed to create world: {self.world_name}")
+                elif self.current[0] == 5:
+                    # Open multiplayer menu
+                    self.game.show_multiplayer_menu()
+                    self.kill()
 
             self.game.play_sound('menu_click')  # Use safe audio system
 

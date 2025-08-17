@@ -93,6 +93,22 @@ class RenderManager:
             self.game.screen.blit(sprite.image, self.game.camera.apply(sprite))
             if GameConfig.SHOW_HITBOXES or self.game.hitboxDebug:
                 pg.draw.rect(self.game.screen, GREEN, self.game.camera.apply(sprite), 1)
+        
+        # Draw multiplayer players
+        if hasattr(self.game, 'multiplayer_players'):
+            for sprite in self.game.multiplayer_players:
+                self.game.screen.blit(sprite.image, self.game.camera.apply(sprite))
+                if GameConfig.SHOW_HITBOXES or self.game.hitboxDebug:
+                    pg.draw.rect(self.game.screen, GREEN, self.game.camera.apply(sprite), 1)
+                
+                # Draw player name above the player
+                if hasattr(sprite, 'player_name'):
+                    name_surface = self.game.font_16.render(sprite.player_name, True, (255, 255, 255))
+                    name_rect = name_surface.get_rect()
+                    player_rect = self.game.camera.apply(sprite)
+                    name_rect.centerx = player_rect.centerx
+                    name_rect.bottom = player_rect.top - 5
+                    self.game.screen.blit(name_surface, name_rect)
     
     def _draw_mobs(self):
         """Draw mob sprites."""

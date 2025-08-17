@@ -123,6 +123,51 @@ class Chunk():
         """Mark a chunk as accessed for memory management."""
         import time
         self.chunk_access_times[chunk_name] = time.time()
+    
+    def clearChunks(self):
+        """Clear all chunks and loaded chunks."""
+        self.chunks.clear()
+        self.loaded.clear()
+        self.chunk_access_times.clear()
+        self.modified_chunks.clear()
+        log_info("Cleared all chunks")
+    
+    def set_block(self, x: int, y: int, block_id: int, force_create: bool = True):
+        """Set a block at the given world coordinates."""
+        # Calculate chunk coordinates (use proper floor division for negative coordinates)
+        import math
+        chunk_x = int(math.floor(x / CHUNKSIZE))
+        chunk_y = int(math.floor(y / CHUNKSIZE))
+        chunk_name = f"{chunk_x},{chunk_y}"
+        
+        # Calculate local coordinates within the chunk
+        # For negative coordinates, we need to ensure local coords are positive
+        local_x = x - (chunk_x * CHUNKSIZE)
+        local_y = y - (chunk_y * CHUNKSIZE)
+        
+        # Ensure chunk exists - only create if force_create is True
+        if chunk_name not in self.chunks:
+            if force_create:
+                # Generate chunk if it doesn't exist
+                self.generate(chunk_x, chunk_y)
+            else:
+                # For multiplayer clients, create empty chunk structure with proper format
+                # Each cell should contain a list of tile IDs (like normal generation)
+                self.chunks[chunk_name] = [[[str(0).zfill(2)] for _ in range(CHUNKSIZE)] for _ in range(CHUNKSIZE)]
+        
+        # Modify the block in the chunk
+        if chunk_name in self.chunks:
+            chunk_data = self.chunks[chunk_name]
+            if 0 <= local_y < len(chunk_data) and 0 <= local_x < len(chunk_data[local_y]):
+                # Convert block_id to string format if needed
+                block_str = str(block_id).zfill(2) if isinstance(block_id, int) else str(block_id)
+                # Set the block as a single-item list to match the expected format
+                chunk_data[local_y][local_x] = [block_str]
+                self.modified_chunks.add(chunk_name)
+                self.access_chunk(chunk_name)
+                return True
+        
+        return False
 
 
     # Generate a chunk at given coordinates using pnoise2 and adding it to the chunk list
@@ -241,22 +286,24 @@ class Chunk():
         cname = str(chunkx) + ',' + str(chunky)
 
         if cname not in self.chunks:
-            print("Chunk at {} does not exist".format(cname))
+            # Don't print the error message, just return None
+            # print("Chunk at {} does not exist".format(cname))
+            return None
         else:
-            if cname not in self.loaded:
-
+            # Check if chunk is already loaded - if so, still return data but don't re-add to loaded list
+            already_loaded = cname in self.loaded
+            
+            if not already_loaded:
                 # Add the chunk to the loaded chunks list
                 self.loaded.append(cname)
                 # print("Loading chunk at {}".format(cname))
-                data = []
+            
+            data = []
+            # Select the chunk according to the coordinates given
+            chunktoload = self.chunks[cname]
 
-                # Select the chunk acording to the coordinates given
-                chunktoload = self.chunks[cname]
+            for y, line in enumerate(chunktoload):
+                for x, tile in enumerate(line):
+                    data.append((tile, x + chunkx * CHUNKSIZE, y + chunky * CHUNKSIZE))
 
-                for y, line in enumerate(chunktoload):
-                    for x, tile in enumerate(line):
-                        data.append((tile, x + chunkx * CHUNKSIZE, y + chunky * CHUNKSIZE))
-
-                return data
-            # else:
-            # 	print("Chunk at {} has already been loaded".format(cname))
+            return data

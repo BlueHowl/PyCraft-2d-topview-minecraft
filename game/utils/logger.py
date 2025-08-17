@@ -134,3 +134,10 @@ def log_game_event(event: str, details: dict = None):
 
 def log_performance(operation: str, duration_ms: float):
     game_logger.performance(operation, duration_ms)
+
+def setup_logger(log_level: str = "INFO"):
+    """Setup logger with specified log level for external use."""
+    global game_logger
+    if game_logger._logger:
+        game_logger._logger.setLevel(getattr(logging, log_level.upper()))
+    return game_logger._logger

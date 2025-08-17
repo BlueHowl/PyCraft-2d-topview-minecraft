@@ -129,6 +129,14 @@ class Game:
         # Track player's current chunk for efficient chunk reloading
         self.last_player_chunk = None
         
+        # Multiplayer game modes
+        self.game_mode = "menu"  # "menu", "singleplayer", "multiplayer_client", "multiplayer_host"
+        self.network_manager = None
+        self.multiplayer_players = pg.sprite.Group()  # For remote players
+        
+        # Setup network message handlers
+        self._setup_network_handlers()
+        
     def _init_sprite_groups(self):
         """Initialize sprite groups."""
         self.all_sprites = pg.sprite.Group()
@@ -305,40 +313,83 @@ class Game:
     
     def new(self):
         """Initialize a new game."""
+        log_info(f"Starting new game in {self.game_mode} mode")
+        if hasattr(self, 'network_manager') and self.network_manager:
+            log_info(f"Network manager status at start of new(): {self.network_manager.is_connected()}")
+        
         pg.mouse.set_visible(False)
         
-        # Create map with game folder for new data manager
-        self.map = Map(path.join(self.game_folder, 'saves/' + self.worldName), self.game_folder)
+        # For multiplayer client, create a minimal map without loading from disk
+        if self.game_mode == "multiplayer_client":
+            log_info("Creating client-side map for multiplayer")
+            # Create a minimal map for multiplayer client
+            from game.world.Map import Map
+            # Use a dummy path that won't load any data
+            self.map = Map("__client_temp__", None)  # None game_folder prevents loading
+        else:
+            # Create map with game folder for new data manager
+            self.map = Map(path.join(self.game_folder, 'saves/' + self.worldName), self.game_folder)
         
         # Create pathfinding matrix
         self.pathfind = [vec(0, 0), [[1] * (CHUNKRENDERX * 2 + 2) * CHUNKSIZE] * (
             CHUNKRENDERY * 2 + 2) * CHUNKSIZE]
         
         # Create chunk manager
-        self.chunkmanager = Chunk(path.join(
-            self.game_folder, 'saves/' + self.worldName), int(self.map.levelSavedData[2]), self.game_state_manager.data_manager)
+        if self.game_mode == "multiplayer_client":
+            # For multiplayer client, create chunk manager without loading from disk
+            self.chunkmanager = Chunk("__client_temp__", 0, None)
+        else:
+            self.chunkmanager = Chunk(path.join(
+                self.game_folder, 'saves/' + self.worldName), int(self.map.levelSavedData[2]), self.game_state_manager.data_manager)
         
         # Create player
-        playerState = self.map.levelSavedData[0].split(':')
-        # Convert tile coordinates to pixel coordinates
-        player_x = int(playerState[0]) * TILESIZE
-        player_y = int(playerState[1]) * TILESIZE
+        if self.game_mode == "multiplayer_client":
+            # For multiplayer client, use default spawn position (server will update)
+            player_x = 0 * TILESIZE
+            player_y = 0 * TILESIZE
+            self.spawnPoint = vec(0 * TILESIZE, 0 * TILESIZE)
+        else:
+            playerState = self.map.levelSavedData[0].split(':')
+            # Convert tile coordinates to pixel coordinates
+            player_x = int(playerState[0]) * TILESIZE
+            player_y = int(playerState[1]) * TILESIZE
+            # Set spawn point (convert from tile coordinates to pixel coordinates)
+            spawn = self.map.levelSavedData[3].split(':')
+            self.spawnPoint = vec(int(spawn[0]) * TILESIZE, int(spawn[1]) * TILESIZE)
+        
         self.player = Player(self, player_x, player_y, 0)  # lws = 0 as default
         
-        # Set spawn point (convert from tile coordinates to pixel coordinates)
-        spawn = self.map.levelSavedData[3].split(':')
-        self.spawnPoint = vec(int(spawn[0]) * TILESIZE, int(spawn[1]) * TILESIZE)
-        
         # Load saved game state
-        self.global_time = int(self.map.levelSavedData[4])
-        self.night_shade = int(self.map.levelSavedData[5])
+        if self.game_mode == "multiplayer_client":
+            # For multiplayer client, use default values (server will sync)
+            self.global_time = 0
+            self.night_shade = 255
+        else:
+            self.global_time = int(self.map.levelSavedData[4])
+            self.night_shade = int(self.map.levelSavedData[5])
         
         # Create camera
         self.camera = Camera(WIDTH, HEIGHT)
         
-        # Load floating items
-        for item in self.map.floatingItemsData:
-            FloatingItem(self, item[0], item[1], item[2])
+        # Load floating items (only for non-multiplayer client)
+        if self.game_mode != "multiplayer_client":
+            for item in self.map.floatingItemsData:
+                FloatingItem(self, item[0], item[1], item[2])
+        
+        # Initialize networking if needed
+        if self.game_mode in ["multiplayer_client", "multiplayer_host"] and self.network_manager:
+            log_info("Initializing network functionality")
+            log_info(f"Network manager status at end of new(): {self.network_manager.is_connected()}")
+            # The network manager should already be configured by the menu
+        
+        # Apply pending world state if we're a multiplayer client
+        if self.game_mode == "multiplayer_client" and hasattr(self, 'pending_world_state'):
+            log_info("Applying pending world state after game initialization")
+            world_state = self.pending_world_state
+            delattr(self, 'pending_world_state')  # Clean up
+            self._handle_world_state(world_state)
+        
+        log_info("Game initialization completed successfully")
     
     def run(self):
         """Main game loop with performance monitoring."""
@@ -410,6 +461,14 @@ class Game:
         """Update game state."""
         self.now = pg.time.get_ticks()
         self.mousePos = pg.mouse.get_pos()
+
+        # Update network manager if in multiplayer mode
+        if hasattr(self, 'network_manager') and self.network_manager:
+            # Ensure network manager is running in multiplayer modes
+            if self.game_mode in ["multiplayer_client", "multiplayer_host"] and not self.network_manager.running:
+                log_info("Network manager not running, re-initializing...")
+                self.network_manager.initialize()
+            self.network_manager.update(self.dt)
 
         # Auto-save logic
         if self.now >= self.last_save + SAVE_DELAY:
@@ -484,6 +543,127 @@ class Game:
     def save(self):
         return self.game_state_manager.save_game()
     
+    def show_multiplayer_menu(self):
+        """Show the multiplayer menu."""
+        from game.ui.MultiplayerMenu import MultiplayerMenu
+        
+        # Initialize multiplayer ready flag
+        self.multiplayer_ready = False
+        m = MultiplayerMenu(self, 0, 0, self.game_folder)
+        
+        while not self.playing:
+            # Handle events
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    self.quit()
+                    
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_ESCAPE:
+                        if m.page == 0:
+                            # Go back to main menu
+                            self.show_start_screen()
+                            return
+                        else:
+                            m.toggle_gui(0)
+                    
+                    # Handle key events for input boxes
+                    m.handle_key_event(event)
+                    
+                elif event.type == pg.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        if not m.handle_click(pg.mouse.get_pos()):
+                            # No UI element was clicked, check for menu navigation
+                            if m.page != 0:
+                                m.toggle_gui(0)
+            
+            # Update
+            m.update()
+            
+            # Check if multiplayer connection is ready
+            if hasattr(self, 'multiplayer_ready') and self.multiplayer_ready:
+                log_info("Multiplayer connection ready, starting client game...")
+                # Clean up GUI elements before starting the game
+                m.kill()  # Remove from sprite groups
+                # Clear any remaining GUI elements from multiplayer menu
+                for sprite in list(self.gui):
+                    if hasattr(sprite, 'game') and sprite.game == self:
+                        sprite.kill()
+                self.start_multiplayer_client(self.network_manager)
+                break
+            
+            # Draw
+            self.screen.fill((50, 50, 50))
+            self.screen.blit(m.image, m.rect)
+            m.draw_input_boxes(self.screen)
+            pg.display.flip()
+        
+        # Clean up any remaining GUI elements when exiting the menu
+        if m and m.alive():
+            m.kill()
+        # Clear any remaining GUI elements from multiplayer menu
+        for sprite in list(self.gui):
+            if hasattr(sprite, 'game') and sprite.game == self:
+                sprite.kill()
+    
+    def start_multiplayer_client(self, network_manager):
+        """Start the game as a multiplayer client."""
+        log_info("Setting up multiplayer client mode...")
+        self.game_mode = "multiplayer_client"
+        self.network_manager = network_manager
+        # Ensure we have a world name set
+        if not hasattr(self, 'worldName') or not self.worldName:
+            self.worldName = "Server World"
+        log_info(f"Starting multiplayer client game with world: {self.worldName}")
+        log_info(f"Network manager connection status: {self.network_manager.is_connected()}")
+        
+        # Remove the sleep and see if it helps
+        # import time
+        # time.sleep(0.1)
+        
+        # Set playing to True to exit menu loop, then new() and run() will be called by show_go_screen()
+        self.playing = True
+        log_info("Multiplayer client setup complete, exiting menu...")
+        log_info(f"Network manager connection status after setup: {self.network_manager.is_connected()}")
+    
+    def start_multiplayer_host(self, network_manager):
+        """Start the game as a multiplayer host."""
+        self.game_mode = "multiplayer_host"
+        self.network_manager = network_manager
+        # Ensure we have a world name set
+        if not hasattr(self, 'worldName') or not self.worldName:
+            self.worldName = "Host World"
+        log_info(f"Starting multiplayer host game with world: {self.worldName}")
+        # Set playing to False to exit menu loop, then new() and run() will be called by show_go_screen()
+        self.playing = False
+    
+    def start_singleplayer_with_networking(self):
+        """Start singleplayer game using client-server architecture."""
+        from game.network.network_manager import NetworkManager, NetworkMode
+        
+        try:
+            # Create network manager in local server mode
+            self.network_manager = NetworkManager(NetworkMode.LOCAL_SERVER)
+            
+            # Start local server for singleplayer
+            if self.network_manager.start_local_server(25565, 1):
+                # Connect to our own server
+                if self.network_manager.connect_to_server("localhost", 25565, "Player", self.worldName):
+                    self.game_mode = "singleplayer"
+                    self.playing = True
+                    log_info("Started singleplayer game with networking")
+                    return
+            
+            log_error("Failed to start singleplayer networking")
+            # Fallback to regular singleplayer
+            self.game_mode = "singleplayer"
+            self.playing = True
+                
+        except Exception as e:
+            log_error(f"Singleplayer networking error: {e}")
+            # Fallback to regular singleplayer
+            self.game_mode = "singleplayer"
+            self.playing = True
+
     def show_start_screen(self):
         """Show the start screen menu."""
         m = Menu(self, 0, 0, self.game_folder)
@@ -518,8 +698,228 @@ class Game:
             for box in m.inputBoxes:
                 box.draw(self.screen)
             pg.display.flip()
+        
+        # Clean up GUI elements when exiting the menu
+        if m and m.alive():
+            m.kill()
+        # Clear any remaining GUI elements from start menu
+        for sprite in list(self.gui):
+            if hasattr(sprite, 'game') and sprite.game == self:
+                sprite.kill()
 
     def show_go_screen(self):
-        """Start the main game."""
-        self.new()
-        self.run()
+        """Start the main game based on the current game mode."""
+        log_info(f"Starting game mode: {self.game_mode}")
+        if hasattr(self, 'network_manager') and self.network_manager:
+            log_info(f"Network manager status before game start: {self.network_manager.is_connected()}")
+        
+        if self.game_mode == "singleplayer":
+            # Start singleplayer with client-server architecture
+            self.start_singleplayer_with_networking()
+            
+        if self.game_mode in ["singleplayer", "multiplayer_client", "multiplayer_host"]:
+            log_info("Calling new() to initialize game state...")
+            if hasattr(self, 'network_manager') and self.network_manager:
+                log_info(f"Network manager status before new(): {self.network_manager.is_connected()}")
+            self.new()
+            if hasattr(self, 'network_manager') and self.network_manager:
+                log_info(f"Network manager status after new(): {self.network_manager.is_connected()}")
+            log_info("Calling run() to start game loop...")
+            if hasattr(self, 'network_manager') and self.network_manager:
+                log_info(f"Network manager status before run(): {self.network_manager.is_connected()}")
+            self.run()
+        else:
+            # Default behavior for backward compatibility
+            self.new()
+            self.run()
+    
+    def _setup_network_handlers(self):
+        """Setup network message handlers for multiplayer."""
+        self.network_message_handlers = {
+            "WORLD_STATE": self._handle_world_state,
+            "PLAYER_SPAWN_DATA": self._handle_player_spawn_data,
+            "PLAYER_UPDATE": self._handle_player_update,
+            "BLOCK_UPDATE": self._handle_block_update,
+        }
+    
+    def setup_network_manager(self, network_manager):
+        """Setup network manager and its callbacks."""
+        self.network_manager = network_manager
+        if network_manager:
+            # Set the message callback to our handler
+            network_manager.on_message = self._handle_network_message
+    
+    def _handle_network_message(self, message_type, data, player_id):
+        """Handle incoming network messages."""
+        try:
+            from game.network.message_types import MessageType
+            
+            log_debug(f"Received network message: {message_type}")
+            
+            # Convert MessageType to string for easier handling
+            message_type_name = message_type.name if hasattr(message_type, 'name') else str(message_type)
+            
+            handler = self.network_message_handlers.get(message_type_name)
+            if handler:
+                handler(data)
+            else:
+                log_debug(f"No handler for message type: {message_type_name}")
+                
+        except Exception as e:
+            log_error(f"Error handling network message {message_type}: {e}")
+    
+    def _handle_world_state(self, data):
+        """Handle world state synchronization from server."""
+        log_info("=== WORLD STATE HANDLER CALLED ===")
+        log_info(f"Game mode: {self.game_mode}")
+        log_info(f"Current chunks in chunkmanager: {len(self.chunkmanager.get_chunks()) if hasattr(self, 'chunkmanager') and self.chunkmanager else 'None'}")
+        
+        # If chunk manager isn't initialized yet, store the world state for later
+        if not hasattr(self, 'chunkmanager') or not self.chunkmanager:
+            log_info("Chunk manager not initialized yet, storing world state for later application")
+            self.pending_world_state = data
+            return
+        
+        # Apply world state to the client game
+        chunks = data.get('chunks', {})
+        floating_items = data.get('floating_items', {})
+        world_name = data.get('world_name', 'Unknown')
+        
+        log_info(f"Applying world state: {len(chunks)} chunks, {len(floating_items)} items")
+        log_info(f"First few chunk keys: {list(chunks.keys())[:5]}")
+        
+        # Debug player position if player exists
+        if hasattr(self, 'player') and self.player:
+            log_info(f"Player position: ({self.player.pos.x}, {self.player.pos.y})")
+            log_info(f"Player tile position: ({self.player.tilepos.x}, {self.player.tilepos.y})")
+            log_info(f"Player chunk position: ({self.player.chunkpos.x}, {self.player.chunkpos.y})")
+        
+        # Update the client's chunk manager with the server's world data
+        if hasattr(self, 'chunkmanager') and self.chunkmanager:
+            # Clear any existing client-side chunks
+            log_info("Clearing existing chunks...")
+            self.chunkmanager.clearChunks()
+            log_info(f"Chunks after clear: {len(self.chunkmanager.get_chunks())}")
+            
+            # Convert server chunks to client chunk manager format
+            log_info("Converting and applying server chunks...")
+            chunk_count = 0
+            block_count = 0
+            
+            for chunk_key, chunk_blocks in chunks.items():
+                chunk_x, chunk_y = map(int, chunk_key.split(','))
+                
+                # Create a 2D array for this chunk (client format)
+                # Each cell contains a list of tile IDs (for layering support)
+                from game.config.settings import CHUNKSIZE
+                chunk_2d = [[[str(0).zfill(2)] for _ in range(CHUNKSIZE)] for _ in range(CHUNKSIZE)]
+                
+                # Convert server blocks to client format
+                for block_key, block_id in chunk_blocks.items():
+                    x, y = map(int, block_key.split(','))
+                    
+                    # Calculate chunk-local coordinates properly handling negative values
+                    local_x = x - (chunk_x * CHUNKSIZE)
+                    local_y = y - (chunk_y * CHUNKSIZE)
+                    
+                    # Ensure coordinates are within chunk bounds
+                    if 0 <= local_x < CHUNKSIZE and 0 <= local_y < CHUNKSIZE:
+                        # Handle block_id which comes as a list from the server
+                        if isinstance(block_id, list):
+                            # Use the block list directly as sent from server
+                            chunk_2d[local_y][local_x] = block_id
+                        else:
+                            # Convert single block ID to tile string format (pad with zero if needed)
+                            tile_str = f"{block_id:02d}"
+                            chunk_2d[local_y][local_x] = [tile_str]
+                        block_count += 1
+                        
+                    # Debug: Verify coordinate conversion for first few blocks
+                    if chunk_count == 0 and block_count <= 5:
+                        log_debug(f"Block at world ({x},{y}) -> chunk ({chunk_x},{chunk_y}) local ({local_x},{local_y}) = {block_id}")
+                
+                # Store the chunk in the client's chunk manager
+                chunk_name = f"{chunk_x},{chunk_y}"
+                self.chunkmanager.chunks[chunk_name] = chunk_2d
+                
+                # Mark the chunk as accessed for memory management
+                self.chunkmanager.access_chunk(chunk_name)
+                
+                chunk_count += 1
+                
+                log_debug(f"Converted chunk ({chunk_x}, {chunk_y}) with {len(chunk_blocks)} blocks")
+            
+            log_info(f"Applied {chunk_count} chunks with {block_count} blocks")
+            log_info(f"Final chunks in chunkmanager: {len(self.chunkmanager.get_chunks())}")
+        
+        # Clear and spawn floating items
+        if hasattr(self, 'floatingItems'):
+            for item in self.floatingItems:
+                item.kill()
+            self.floatingItems.empty()
+        
+        # Spawn server floating items
+        for item_id, item_data in floating_items.items():
+            FloatingItem(self, 
+                        item_data['x'], 
+                        item_data['y'], 
+                        item_data['item_type'],
+                        item_data['quantity'])
+        
+        log_info("=== WORLD STATE APPLIED SUCCESSFULLY ===")
+        log_info(f"Final chunks in chunkmanager: {len(self.chunkmanager.get_chunks()) if hasattr(self, 'chunkmanager') and self.chunkmanager else 'None'}")
+    
+    def _handle_player_spawn_data(self, data):
+        """Handle player spawn data from server."""
+        player_id = data.get('player_id')
+        player_name = data.get('player_name', 'Unknown')
+        x = data.get('x', 0)
+        y = data.get('y', 0)
+        health = data.get('health', 100)
+        max_health = data.get('max_health', 100)
+        facing_direction = data.get('facing_direction', 'right')
+        
+        log_info(f"Spawning player: {player_name} at ({x}, {y})")
+        
+        # If this is our own player, update our position
+        if hasattr(self, 'network_manager') and self.network_manager and player_id == self.network_manager.player_id:
+            if hasattr(self, 'player'):
+                self.player.pos.x = x
+                self.player.pos.y = y
+                self.player.health = health
+        else:
+            # Spawn other player entity
+            # Create multiplayer player representation
+            remote_player = Player(self, x, y, 0)
+            remote_player.player_id = player_id
+            remote_player.player_name = player_name
+            remote_player.health = health
+            # Add to multiplayer players group
+            self.multiplayer_players.add(remote_player)
+            log_info(f"Added remote player {player_name} to multiplayer_players group")
+    
+    def _handle_player_update(self, data):
+        """Handle player position updates from server."""
+        player_id = data.get('player_id')
+        x = data.get('x', 0)
+        y = data.get('y', 0)
+        health = data.get('health', 100)
+        facing_direction = data.get('facing_direction', 'right')
+        
+        # Update remote player position
+        for remote_player in self.multiplayer_players:
+            if hasattr(remote_player, 'player_id') and remote_player.player_id == player_id:
+                remote_player.pos.x = x
+                remote_player.pos.y = y
+                remote_player.health = health
+                break
+    
+    def _handle_block_update(self, data):
+        """Handle block updates from server."""
+        x = data.get('x', 0)
+        y = data.get('y', 0)
+        block_id = data.get('block_id', 0)
+        
+        # Apply block change to local world
+        if hasattr(self, 'chunkmanager'):
+            self.chunkmanager.set_block(x, y, block_id)
